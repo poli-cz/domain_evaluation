@@ -20,7 +20,7 @@ from datetime import timedelta
 
 
 
-class ssl_loader:
+class SSL_loader:
 
 	def __init__(self, domain_name):
 		self.domain = domain_name
@@ -142,7 +142,6 @@ class ssl_loader:
 
 
 
-
 def insert_ssl_data(ssl_data, domain_name):
 	print("For: ", domain_name)
 
@@ -170,7 +169,7 @@ def insert_ssl_data(ssl_data, domain_name):
 
 def discover_ssl(name):
 	print(name)
-	s = ssl_loader(name)
+	s = SSL_loader(name)
 
 	ssl_data = {
 				"is_ssl": False, 
@@ -189,13 +188,14 @@ def discover_ssl(name):
 
 	try:
 		_domCert = data[name][0]
+
 	except:
 		try:
 			url = "www." + name
 			_domCert = data[url][0]
 		except:
 			print("Cant connect to this ip")
-			insert_ssl_data(ssl_data, name)
+			return ssl_data
 			return False
 		
 	ssl_data['is_ssl'] = True
@@ -217,28 +217,28 @@ def discover_ssl(name):
 	domNotBefore = (_domCert.get_notBefore()).decode("utf-8")[:-1]
 	domNotBefore = datetime.datetime.strptime(domNotBefore, "%Y%m%d%H%M%S")
 
-	ssl_data['ssl_data']['start_date'] =domNotBefore
+	ssl_data['ssl_data']['start_date'] = domNotBefore
 	ssl_data['ssl_data']['end_date'] = domNotAfter
-	insert_ssl_data(ssl_data, name)
+	return ssl_data
 
 
 		
+if __name__ == '__main__':
+
+	d = Database.Database('domains')
+	collection = d.return_collection("goodDomains")
+	domain_names = []
+
+	for domain in collection.find():
+		try:
+			ssl = domain['ssl_data']
+		except:
+			domain_names.append(domain['name'])
+			print("apending..")
 
 
-d = Database.Database('domains')
-collection = d.return_collection("goodDomains")
-domain_names = []
-
-for domain in collection.find():
-	try:
-		ssl = domain['ssl_data']
-	except:
-		domain_names.append(domain['name'])
-		print("apending..")
-
-
-with concurrent.futures.ThreadPoolExecutor(max_workers=50) as pool:
-	list(pool.map(discover_ssl, domain_names))
+	with concurrent.futures.ThreadPoolExecutor(max_workers=50) as pool:
+		list(pool.map(discover_ssl, domain_names))
 
 	
 	

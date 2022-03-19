@@ -14,6 +14,7 @@ import csv
 
 # Database
 import Database
+import SSL_loader
 
 from pymongo import MongoClient
 import pymongo
@@ -30,8 +31,8 @@ ValidHostnameRegex = r"(?:[a-z0-9](?:[a-z0-9-_]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0
 
 # if not used, limited number of requests
 #ip_auth_token="f6157341b9e078"  # medikem token
-#ip_auth_token="6b3b15bcf578ec"  # seznam token
-ip_auth_token="7b7427498417ed"  # medikem token
+ip_auth_token="6b3b15bcf578ec"  # seznam token
+#ip_auth_token="7b7427498417ed"  # medikem token
 
 # pip install git+https://github.com/rthalley/dnspython
 
@@ -141,6 +142,7 @@ class Base_parser:
         self.ip = None
         self.geo_data = None
         self.whois_data = None
+        self.ssl_data = None
 
         self.dns_resolver = dns.resolver.Resolver()
         self.dns_resolver.nameservers = ["8.8.8.8", "8.8.4.4"]
@@ -156,6 +158,9 @@ class Base_parser:
 
     def get_geo_data(self):
         return self.geo_data
+
+    def get_ssl_data(self):
+        return self.ssl_data
 
     def get_whois_data(self):
         return self.whois_data
@@ -181,6 +186,7 @@ class Base_parser:
             return False
 
     def load_dns_data(self):
+        print("Loading DNS data")
         types = ['A', 'AAAA', 'CNAME', 'SOA', 'NS', 'MX', 'TXT']
         #types = ['TXT']
         dns_records = {}
@@ -205,6 +211,7 @@ class Base_parser:
         self.dns = dns_records
 
     def load_geo_info(self, ip=None):
+        print("Loading Geo info data")
         if ip is None:
             if self.ip is None:
                 print("Ip of hostname not discovered, doing it manualy...")
@@ -233,7 +240,9 @@ class Base_parser:
 
         self.geo_data = geo_data
 
-        
+    def load_ssl_data(self):
+        self.ssl_data = SSL_loader.discover_ssl(self.hostname)
+
     def ip_from_host(self):
         hostname = self.hostname
 
@@ -280,6 +289,7 @@ def get_database():
 # insert good domains
 def insert(hostname):
     db = get_database()
+    print(hostname)
     good_domain_collection = db['goodDomains']
     data = get_data(hostname)
     print("G")
@@ -327,7 +337,7 @@ allDomains = d.return_db()
 if not fetched:
     ### Fetch data ###
     raw_blacklisted = l.get_links('../Data/blacklists-2021.01.csv')
-    good_hostnames = l.get_hostnames('../Data/top-1m.csv', 1, 250000)
+    good_hostnames = l.get_hostnames('../Data/top-1m.csv', 1, 100000)
     bad_hostnames_1 = l.get_hostnames_from_links(raw_blacklisted)
     raw_spam = l.get_hostnames('../Data/spyware.csv', 0, 70000)
 
@@ -352,56 +362,62 @@ if not fetched:
 
     result = all_doms.insert_many([good_domains, bad_domains])
 
-# Create a new collection
-good_domains = d.return_collection('allDomains')
 
-all_good_domains = good_domains.find_one({"name": "good_domains"})
-all_bad_domains = good_domains.find_one({"name": "bad_domains"})
+if __name__ == '__main__':
 
-bad_domains = all_bad_domains['names']
-good_domains = all_good_domains['names']
+    # Create a new collection
+    good_domains = d.return_collection('allDomains')
 
+    all_good_domains = good_domains.find_one({"name": "good_domains"})
+    all_bad_domains = good_domains.find_one({"name": "bad_domains"})
 
-
-bad_collection = d.return_collection("badDomains")
-bad_in_db = []
-good_collection = d.return_collection("goodDomains")
-
-for domain in bad_collection.find():
-	bad_in_db.append(domain['name'])
-
-
-print("filtering for duplicit records")
-bad_domains = list(dict.fromkeys(bad_domains))
-
-
-print("filtering already fetched data from database")
-final = []
-i=0
-for name in bad_domains:
-    if name not in bad_in_db:
-        final.append(name)
-        i=i+1
-        print(i)
-
-
-print("Ok, found", i, " Not fetched ips")
+    bad_domains = all_good_domains['names']
+    good_domains = all_good_domains['names']
 
 
 
+    bad_collection = d.return_collection("goodDomains")
+    bad_in_db = []
+    good_collection = d.return_collection("goodDomains")
 
-with concurrent.futures.ThreadPoolExecutor(max_workers=70) as pool:
-    #list(pool.map(insert, good_domains))
-    list(pool.map(insert_bad, final))
+    for domain in bad_collection.find():
+        bad_in_db.append(domain['name'])
 
 
-#d.get_stats("goodDomains")
-#d.get_stats("badDomains")
-#get_basic_stats("goodDomains")
-#get_basic_stats("badDomains")
+    print("filtering for duplicit records")
+    bad_domains = list(dict.fromkeys(bad_domains))
 
-#geo_corrector("goodDomains")
 
-        
+    print("filtering already fetched data from database")
+    final = []
+    i=0
+    for name in bad_domains:
+        if name not in bad_in_db:
+            final.append(name)
+            i=i+1
+            print(i)
+            if i > 7000:
+                break
+
+
+    print("Ok, found", i, " Not fetched ips")
+
+    print(len(good_domains))
+    #input()
+
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=30) as pool:
+        list(pool.map(insert, final))
+    #  list(pool.map(insert_bad, final))
+
+
+    #d.get_stats("goodDomains")
+    #d.get_stats("badDomains")
+    #get_basic_stats("goodDomains")
+    #get_basic_stats("badDomains")
+
+    #geo_corrector("goodDomains")
+
+            
 
 
