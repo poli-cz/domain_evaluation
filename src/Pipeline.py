@@ -50,6 +50,9 @@ if Lex.is_empty(dns_data) and Lex.is_empty(geo_data) and Lex.is_empty(whois_data
 # Get data together to some structure
 domain_data = {"name": hostname, "dns_data": dns_data, "geo_data": geo_data, "whois_data": whois_data, "ssl_data": ssl_data}
 
+#print(domain_data)
+
+#input()
 
 
 # Module for data evaluation and prediction
@@ -69,4 +72,6 @@ else:
         print("[Info]: Domain:", hostname, "is with:", accuracy*100, "%", "GOOD")
 
 print("----------------------------------------------------------------")
+
+# maxmind geoIP
 
