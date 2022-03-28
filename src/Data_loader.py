@@ -146,9 +146,8 @@ class Base_parser:
 
         self.dns_resolver = dns.resolver.Resolver()
         self.dns_resolver.nameservers = ["8.8.8.8", "8.8.4.4"]
-        self.dns_resolver.timeout = 90
-        self.dns_resolver.lifetime = 90
-
+        self.dns_resolver.timeout = 10
+        self.dns_resolver.lifetime = 10
 
     def get_dns(self):
         return self.dns
@@ -186,7 +185,7 @@ class Base_parser:
             return False
 
     def load_dns_data(self):
-        print("Loading DNS data")
+        #print("Loading DNS data")
         types = ['A', 'AAAA', 'CNAME', 'SOA', 'NS', 'MX', 'TXT']
         #types = ['TXT']
         dns_records = {}
@@ -211,7 +210,7 @@ class Base_parser:
         self.dns = dns_records
 
     def load_geo_info(self, ip=None):
-        print("Loading Geo info data")
+        #print("Loading Geo info data")
         if ip is None:
             if self.ip is None:
                 print("Ip of hostname not discovered, doing it manualy...")
@@ -410,13 +409,6 @@ if __name__ == '__main__':
         list(pool.map(insert, final))
     #  list(pool.map(insert_bad, final))
 
-
-    #d.get_stats("goodDomains")
-    #d.get_stats("badDomains")
-    #get_basic_stats("goodDomains")
-    #get_basic_stats("badDomains")
-
-    #geo_corrector("goodDomains")
 
             
 

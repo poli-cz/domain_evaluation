@@ -14,7 +14,6 @@ class Database:
 		client = MongoClient("mongodb://localhost/domains")
 		self.db = client[database_name]
 
-
 	def return_collection(self, collection):
 		return self.db[collection]
 

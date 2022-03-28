@@ -18,15 +18,25 @@ import Database
 from datetime import timedelta
 
 
+'''		
+Parameters
+----------
+bigram_list : list
+		Encoding a list of bigrams to the list of integers
+		If bigram is not in the dictionary, it replaces with 1 (out of vocabulary token).
 
-
+Returns
+-------
+bigram_int : list
+list of integers.
+'''       
 class SSL_loader:
 
 	def __init__(self, domain_name):
 		self.domain = domain_name
 
 	def GetRootCert(self, _cert):
-		rootCerts = "./root_certs"
+		rootCerts = "./data/root_certs"
 		issuer = _cert.get_issuer()
 
 
@@ -47,7 +57,7 @@ class SSL_loader:
 		else:
 			return None
 
-
+ 
 	def GetCertChain(self, host):
 		"""
 		First it test the connection with host on port 443.
@@ -58,33 +68,37 @@ class SSL_loader:
 		cont = OpenSSL.SSL.Context(OpenSSL.SSL.SSLv23_METHOD)
 		cont.set_timeout(10)
 		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		#sock = OpenSSL.SSL.Connection(context=cont, socket=sock)
-		sock.settimeout(60)
+		sock.settimeout(10)
 		try:
 			sock.connect((host, 443))
 			get = str.encode("GET / HTTP/1.1\nUser-Agent:Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36\n\n")
 			sock.send(get)
 			sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 			sock = OpenSSL.SSL.Connection(context=cont, socket=sock)
-			sock.settimeout(60)
+			sock.settimeout(10)
 			sock.connect((host, 443))
 			sock.setblocking(1)
 			sock.set_connect_state()
 			sock.set_tlsext_host_name(str.encode(host))
 			sock.do_handshake()
 		except socket.gaierror as e:
+			print("[Info]: SSL loader error")
 			print(str(e))
 			return None
 		except socket.timeout as e:
+			print("[Info]: SSL loader error")
 			print(str(e))
 			return None
 		except OpenSSL.SSL.Error as e:
+			print("[Info]: SSL loader error")
 			print(str(e))
 			return None
 		except ConnectionRefusedError as e:
+			print("[Info]: SSL loader error")
 			print(str(e))
 			return None
 		except OSError as e:
+			print("[Info]: SSL loader error")
 			print(str(e))
 			return None
 
@@ -99,7 +113,18 @@ class SSL_loader:
 			print("error closing socket")
 
 		return [chain, version]
+	'''		
+	Parameters
+	----------
+	bigram_list : list
+			Encoding a list of bigrams to the list of integers
+			If bigram is not in the dictionary, it replaces with 1 (out of vocabulary token).
 
+	Returns
+	-------
+	bigram_int : list
+			list of integers.
+	'''        
 	def get_cert(self):
 		host = self.domain
 		certsAndHosts = {}
@@ -168,7 +193,7 @@ def insert_ssl_data(ssl_data, domain_name):
 
 
 def discover_ssl(name):
-	print(name)
+	#print(name)
 	s = SSL_loader(name)
 
 	ssl_data = {
@@ -196,7 +221,6 @@ def discover_ssl(name):
 		except:
 			print("Cant connect to this ip")
 			return ssl_data
-			return False
 		
 	ssl_data['is_ssl'] = True
 
