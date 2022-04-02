@@ -373,11 +373,7 @@ def process_data(name, logging=None):
 		print("len error")
 		return
 
-	net = torch.load('../models/net_0.149_err.pt')
-	prediction = net(torch.tensor(data))
-
-
-	return prediction
+	return data
 
 
 

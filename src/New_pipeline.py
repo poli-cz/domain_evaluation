@@ -39,9 +39,13 @@ import Lex
 from Lex import Net
 import tensorflow as tf
 from Preprocessor import preprocess 
-
+import pickle
 
 model = tf.saved_model.load('../models/domain_bigrams-furt-2020-11-07T11_09_21')
+clf = pickle.load(open('../models/svm_model.smv', 'rb'))
+net = torch.load('../models/net_0.149_err.pt')
+
+
 
 
 
@@ -76,7 +80,9 @@ count=0
 
 for domain in dats:
 	parse = preprocess()
-	bigrams = parse.preprocessing(domain['domain'])
+	print("Enter domain name:")
+	in_name = input()
+	bigrams = parse.preprocessing(in_name)
 
 
 	iter = 43 - len(bigrams)
@@ -86,7 +92,7 @@ for domain in dats:
 	if len(bigrams) > 43:
 		continue
 
-	hostname = str(domain['domain'])
+	hostname = str(in_name)
 	domain_ = Base_parser(hostname)
 
 	domain_.load_dns_data()
@@ -102,15 +108,28 @@ for domain in dats:
 	accuracy = np.around((Lex.is_empty(dns_data) + Lex.is_empty(geo_data) + Lex.is_empty(whois_data) + Lex.is_empty(ssl_data))/4, 1)
 	data_loss = 1 - accuracy
 	domain_data = {"name": hostname, "dns_data": dns_data, "geo_data": geo_data, "whois_data": whois_data, "ssl_data": ssl_data}
+
 	in_data = np.array([bigrams], dtype=np.float32)
-	DATA_prediction = np.around(float(Lex.process_data(domain_data)), 5)
 	GK_prediction = np.around((1 - float(model(in_data))), 5)
+
+
+	
+	
+	data_based_input = Lex.process_data(domain_data)
+	print(data_based_input)
+
+	SVM_prediction = clf.predict(np.array([data_based_input], dtype=np.float32))
+	DATA_prediction = net(torch.tensor(data_based_input))
+	
+
+
+
 	prediction=(DATA_prediction*1.3+GK_prediction*0.2)/2
 	prediction=np.around(float(prediction)*float(accuracy) + float(GK_prediction)*float(data_loss),4)
 
 
-	print(GK_prediction, DATA_prediction)
-
+	print(GK_prediction, float(DATA_prediction), SVM_prediction)
+	input()
 	if prediction >0.5:
 		print("Good site, rating:", np.around(prediction*100, 2), "%", hostname, domain['label'])
 	else:
@@ -123,15 +142,15 @@ for domain in dats:
 
 
 
+	input()
 
 
-	
 
-	
 
-	
 
-	
+
+
+
 
 	#input()
 
