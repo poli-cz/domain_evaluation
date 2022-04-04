@@ -40,6 +40,8 @@ for name in bad_collection.find():
  
 
 label = None
+
+# shuffle datasets
 dats = shuffle(good_data + bad_data)
 
 x_testset = list()
@@ -49,6 +51,9 @@ x_dataset = list()
 y_dataset = list()
 counter =0
 
+
+
+# Split data to train data and test data
 for piece in dats:
     if counter < 5000:
         x_testset.append(piece['data'])
@@ -63,7 +68,7 @@ for piece in dats:
 
 print("loading svm....")
 
-clf = pickle.load(open('./svm_model.smv', 'rb'))
+clf = pickle.load(open('../models/svm_model.smv', 'rb'))
 
 #clf.fit(x_dataset, y_dataset)
 #print("predicting smv...")
@@ -73,10 +78,20 @@ clf = pickle.load(open('./svm_model.smv', 'rb'))
 #filename = ''
 #pickle.dump(clf, open(filename, 'wb'))
 
+count=0
+good=0
+
 for line in dats:
-    print("Input data:", line['data'], "for doamain:", line['domain'])
-    input()
     in_data = np.array([line['data']], dtype=np.float32)
     prediction = clf.predict(in_data)
-    print("Predicted result:", prediction)
-    input()
+    #print(prediction[0], line['label'])
+    if prediction[0] == line['label']:
+        good+=1
+    
+    count+=1
+
+
+    print(good/count)
+
+
+

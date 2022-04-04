@@ -220,7 +220,7 @@ def process_data(name, logging=None):
 
 
 	## Domain level
-	level = domain_name.count('a')
+	level = domain_name.count('.')
 	if level == 1:
 		data.append(1.0)
 	elif level == 2:

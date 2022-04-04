@@ -1,84 +1,41 @@
+# Import basic modules and libraries
 import json
 import time
 import re
-import concurrent.futures
-import Database
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
 
-from pymongo import MongoClient
-import pymongo
 
-maxlen = list()
-a = list()
-with open('./data/bigram_vocabulary_all.json') as json_file:
-	bigrams_vocab2 = json.load(json_file)
-def get_database():
-	client = MongoClient("mongodb://localhost/domains")
-	return client['domains']
-
-
-db = get_database()
-bad_bigram_dataset = db['good_bigram_dataset']
-
-
-
-
-import torch.nn as nn
-import torch.nn.functional as F
+# Import ML and data-processing libraries
+import tensorflow as tf
 import torch
-import torch.optim as optim
-
 import numpy as np
 from array import array
-from keras.preprocessing.sequence import pad_sequences
-from sklearn.utils import shuffle
+import pickle
+
+
+
+# Load custom modules
+import Database
 from Data_loader import Base_parser
 import SSL_loader
 import Lex
 from Lex import Net
-import tensorflow as tf
 from Preprocessor import preprocess 
-import pickle
+
 
 model = tf.saved_model.load('../models/domain_bigrams-furt-2020-11-07T11_09_21')
 clf = pickle.load(open('../models/svm_model.smv', 'rb'))
 net = torch.load('../models/net_0.149_err.pt')
 
+print("[Log]: models loaded")
 
 
 
 
 
-d = Database.Database('domains')
-bad_data = list()
-good_data = list()
 
-
-good_collection = d.return_collection("bad_dataset")
-bad_collection = d.return_collection("good_dataset")
-
-
-for name in good_collection.find():
-	good_data.append(name)
-
-
-for name in bad_collection.find():
-	bad_data.append(name)
-
-
-print(len(bad_data))
-print(len(good_data))
-
-
-
-label = None
-dats = shuffle(good_data + bad_data)
-
-counter=0
-count=0
-
-for domain in dats:
+while True:
 	parse = preprocess()
 	print("Enter domain name:")
 	in_name = input()
@@ -131,13 +88,13 @@ for domain in dats:
 	print(GK_prediction, float(DATA_prediction), SVM_prediction)
 	input()
 	if prediction >0.5:
-		print("Good site, rating:", np.around(prediction*100, 2), "%", hostname, domain['label'])
+		print("Good site, rating:", np.around(prediction*100, 2), "%", hostname)
 	else:
 		if prediction < 0.1:
-			print("Oh GOD, go away, rating:", np.around(prediction*100,2), "%", hostname, domain['label'])
+			print("Oh GOD, go away, rating:", np.around(prediction*100,2), "%", hostname)
 		else:
 
-			print("Bad site, rating:", np.around(prediction*100,2), "%", hostname, domain['label'])
+			print("Bad site, rating:", np.around(prediction*100,2), "%", hostname)
 
 
 
