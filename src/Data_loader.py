@@ -136,7 +136,8 @@ class Data_loader:
         return hostnames
 
 class Base_parser:
-    def __init__(self, hostname):
+    def __init__(self, hostname, resolver_timeout: int ):
+        self.timeout = resolver_timeout
         self.hostname = hostname
         self.dns = None
         self.ip = None
@@ -240,7 +241,7 @@ class Base_parser:
         self.geo_data = geo_data
 
     def load_ssl_data(self):
-        self.ssl_data = SSL_loader.discover_ssl(self.hostname)
+        self.ssl_data = SSL_loader.discover_ssl(self.hostname, self.timeout)
 
     def ip_from_host(self):
         hostname = self.hostname
@@ -323,46 +324,46 @@ def geo_corrector(collection):
                 print("corrected")
 fetched = True
 
-l = Data_loader()
-db = get_database()
-
-d = Database.Database('domains')
-allDomains = d.return_db()
 
 
 
+if __name__ == '__main__':
+
+    l = Data_loader()
+    db = get_database()
+
+    d = Database.Database('domains')
+    allDomains = d.return_db()
 
 
-if not fetched:
-    ### Fetch data ###
-    raw_blacklisted = l.get_links('../Data/blacklists-2021.01.csv')
-    good_hostnames = l.get_hostnames('../Data/top-1m.csv', 1, 100000)
-    bad_hostnames_1 = l.get_hostnames_from_links(raw_blacklisted)
-    raw_spam = l.get_hostnames('../Data/spyware.csv', 0, 70000)
 
-    # clean links from source
-    cleaned_spam = l.clean_links(raw_spam)
+    if not fetched:
+        ### Fetch data ###
+        raw_blacklisted = l.get_links('../Data/blacklists-2021.01.csv')
+        good_hostnames = l.get_hostnames('../Data/top-1m.csv', 1, 100000)
+        bad_hostnames_1 = l.get_hostnames_from_links(raw_blacklisted)
+        raw_spam = l.get_hostnames('../Data/spyware.csv', 0, 70000)
 
-    bad_hostnames = cleaned_spam + bad_hostnames_1
-    ### inserting data in db ###
-    good_domains = {
-        "name": "good_domains",
-        "domain_count": len(good_hostnames),
-        "names": good_hostnames
-    }
+        # clean links from source
+        cleaned_spam = l.clean_links(raw_spam)
 
-    bad_domains = {
-        "name": "bad_domains",
-        "domain_count": len(bad_hostnames),
-        "names": bad_hostnames
-    }
+        bad_hostnames = cleaned_spam + bad_hostnames_1
+        ### inserting data in db ###
+        good_domains = {
+            "name": "good_domains",
+            "domain_count": len(good_hostnames),
+            "names": good_hostnames
+        }
+
+        bad_domains = {
+            "name": "bad_domains",
+            "domain_count": len(bad_hostnames),
+            "names": bad_hostnames
+        }
     #############################
     all_doms = d.return_collection('allDomains')
 
     result = all_doms.insert_many([good_domains, bad_domains])
-
-
-if __name__ == '__main__':
 
     # Create a new collection
     good_domains = d.return_collection('allDomains')

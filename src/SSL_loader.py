@@ -32,8 +32,9 @@ list of integers.
 '''       
 class SSL_loader:
 
-	def __init__(self, domain_name):
+	def __init__(self, domain_name, resolver_timeout: int):
 		self.domain = domain_name
+		self.timeout = resolver_timeout
 
 	def GetRootCert(self, _cert):
 		rootCerts = "./data/root_certs"
@@ -66,16 +67,16 @@ class SSL_loader:
 		global version 
 
 		cont = OpenSSL.SSL.Context(OpenSSL.SSL.SSLv23_METHOD)
-		cont.set_timeout(10)
+		cont.set_timeout(self.timeout)
 		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		sock.settimeout(10)
+		sock.settimeout(self.timeout)
 		try:
 			sock.connect((host, 443))
 			get = str.encode("GET / HTTP/1.1\nUser-Agent:Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36\n\n")
 			sock.send(get)
 			sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 			sock = OpenSSL.SSL.Connection(context=cont, socket=sock)
-			sock.settimeout(10)
+			sock.settimeout(self.timeout)
 			sock.connect((host, 443))
 			sock.setblocking(1)
 			sock.set_connect_state()
@@ -192,19 +193,19 @@ def insert_ssl_data(ssl_data, domain_name):
 	domain_collection.replace_one({'name': domain_name},data, upsert=True)
 
 
-def discover_ssl(name):
+def discover_ssl(name, timeout: int):
 	#print(name)
-	s = SSL_loader(name)
+	s = SSL_loader(name, timeout)
 
 	ssl_data = {
-				"is_ssl": False, 
-				"ssl_data": 
-					{
-					"issuer": None,
-					"end_date": None,
-					"start_date": None
-					}
-				}
+		"is_ssl": False, 
+		"ssl_data": 
+			{
+			"issuer": None,
+			"end_date": None,
+			"start_date": None
+			}
+		}
 
 
 		
