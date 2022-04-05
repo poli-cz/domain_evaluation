@@ -16,7 +16,7 @@ import numpy as np
 from array import array
 import pickle
 import torch.optim as optim
-
+import argparse
 
 # Load custom modules
 import Database
@@ -28,99 +28,51 @@ from Preprocessor import preprocess
 from Core import clasifier
 
 
-class Net(nn.Module):
 
-    # Network structure definition
-    def __init__(self):         
-        super().__init__()
-        self.fc1 = nn.Linear(13, 1000)
-        self.fc2 = nn.Linear(1000, 500)
-        self.fc3 = nn.Linear(500, 1)
+### Parse arguments ###
+parser = argparse.ArgumentParser(description='domain name analysis tool')
+parser.add_argument('domain_name', type=str, help='Required domain name')
+args = parser.parse_args()
+domain_name = args.domain_name
 
 
-    # Data flow definition
-    def forward(self, x):
-        x = F.relu(self.fc1(x))
-        x = F.relu(self.fc2(x))
-        return torch.sigmoid(self.fc3(x)) # For binarz 
+### Initialize classifier and get prediction for each model ###
+cls = clasifier()
+lexical = cls.get_lexical(domain_name)
+data_based = cls.get_data(domain_name)
+svm = cls.get_svm(domain_name)
+
+combined, accuracy = cls.get_mixed(domain_name) # combining all three models, described in documentation
 
 
+### Round values ###
+
+combined = np.around(combined, 3)
+accuracy = np.around(accuracy, 3)
+
+svm = np.around(svm, 3)
+lexical = np.around(lexical, 3)
+data_based = np.around(data_based, 3)
+
+### Output values ###
+
+rating ={
+    "domain_name" : domain_name,
+    "lexical" : lexical,
+    "data-based" : data_based,
+    "svm" : svm,
+    "combined": combined,
+    "accuracy": accuracy
+}
+
+rating_json = json.dumps(rating, indent = 4)
+
+with open(domain_name + '.json', "w") as outfile:
+    outfile.write(rating_json)
+
+exit(0)
 
 
-
-
-
-
-if __name__ == "__main__":
-
-
-
-
-
-
-        # Initialize network
-        net = Net()
-        optimizer = optim.Adam(net.parameters(), lr=0.000001, )
-        loss_fn = nn.BCELoss()
-        optimizer.zero_grad()
-
-
-        # Prepare learning dataset
-        d = Database.Database('domains')
-        bad_data = list()
-        good_data = list()
-
-
-        good_collection = d.return_collection("bad_dataset")
-        bad_collection = d.return_collection("good_dataset")
-
-
-        for name in good_collection.find():
-                good_data.append(name)
-
-
-        for name in bad_collection.find():
-                bad_data.append(name)
-
-        # mix dataset
-        label = None
-        merged = shuffle(good_data + bad_data)
-
-        testset = list()
-        dataset = list()
-        counter = 0
-
-
-        # split to testset and dataset
-        for piece in merged:
-                if counter < 5000:
-                        testset.append(piece)
-                else:
-                        dataset.append(piece)
-
-                counter+=1
-
-        cls = clasifier()
-        count = 0
-        counter = 0
-        for item in dataset:
-                print("[Info]: Enter domain name")
-                domain_name = str(input())
-                #cls.preload_data(item['data'], item['domain'])
-                mixed_data = cls.get_mixed(domain_name)
-                print("--------------------------------------")
-                print(cls.get_data(domain_name), cls.get_svm(domain_name), cls.get_lexical(domain_name))
-                print(mixed_data)
-                print("--------------------------------------")
-
-
-                input()
-
-
-
-
-
-	#
 
 
 

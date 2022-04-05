@@ -56,7 +56,7 @@ class clasifier:
                 domain.load_geo_info()
                 domain.load_whois_data()
                 domain.load_ssl_data()
-                print("loading...")
+
                 dns_data = domain.get_dns()
                 geo_data = domain.get_geo_data()
                 whois_data = domain.get_whois_data()

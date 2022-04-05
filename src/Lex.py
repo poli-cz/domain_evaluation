@@ -136,24 +136,30 @@ class Lexical_analysis:
 			list of integers.
 	'''        
 	def load_rating(self, file_path):
-		with open(file_path, newline='') as csvfile:
-			spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
-			tlds = []
-			i=0
-			for row in spamreader:
-				if i == 0:
-					i+=1
-					continue
+		try:
+			with open('data/tlds.json', 'r') as openfile:
+				self.ratings = json.load(openfile)
+				#print("loaded")
+		except:
 
-				try:
-					domain = {"name": row[0], "badnes": row[1], "popularity": row[2]}
-					tlds.append(domain)
-				except:
-					continue
-				
-				i+=1
-			print(len(tlds), "tlds loaded")
+			with open(file_path, newline='') as csvfile:
+				spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
+				tlds = []
+				i=0
+				for row in spamreader:
+					if i == 0:
+						i+=1
+						continue
+
+					try:
+						domain = {"name": row[0], "badnes": row[1], "popularity": row[2]}
+						tlds.append(domain)
+					except:
+						continue
+					
+					i+=1
 			self.ratings = tlds
+			#print("slowly loaded")
 
 
 def regex_cnt(string, pattern):
