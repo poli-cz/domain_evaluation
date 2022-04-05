@@ -278,7 +278,6 @@ def get_data(hostname):
     geo_data = domain.get_geo_data()
     whois_data = domain.get_whois_data()
  
-   # return {"name": hostname, "dns_data": dns_data}
     domain_data = {"name": hostname, "dns_data": dns_data, "geo_data": geo_data, "whois_data": whois_data}
     return domain_data
 
