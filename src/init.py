@@ -120,7 +120,7 @@ if __name__ == "__main__":
         r_data = res.get_lexical()
 
     elif m_data_based:
-        r_data = res.get_combined()
+        r_data = res.get_data()
 
     elif m_svm:
         r_data = res.get_svm()
