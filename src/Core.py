@@ -146,6 +146,9 @@ class clasifier:
                 self.data = data
                 self.loaded_data = True
 
+        def get_raw(self, hostname: str):
+                pass
+
 
         # Reset data loader
         def reset_data(self, hostname: str) -> bool:

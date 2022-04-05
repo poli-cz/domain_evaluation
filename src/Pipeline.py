@@ -19,7 +19,7 @@ hostname = str(hostname)
 
 
 # Data parsing module
-domain = Base_parser(hostname)
+domain = Base_parser(hostname, 30)
 
 
 # Loading values from different categories
