@@ -1,27 +1,36 @@
-import whois
+""" File: Data_loader.py
+    Author: Jan Polisensky
+    ----
+    Class and functions for domain data collection
+"""
+
+
+# Import generic modules
+
 import socket
 import concurrent.futures
 import dns.resolver
 import requests
 import json
 import sys
-
+from pymongo import MongoClient
+import pymongo
 import urllib
 import re
 import io
 import os
 import time
 import csv
+import whois
 
-# Database
+# Import custom modules
 import Database
 import SSL_loader
 
-from pymongo import MongoClient
-import pymongo
 
-
-
+#######################
+#### resolver setup ###
+#######################
 forbiddenIps = {"0.0.0.0", "127.0.0.1", "255.255.255.255"} # nonsense IPs, feel free to add more
 nonvalidTypes = {"csv"}  
 validTxtTypes = {"plain", "octet-stream", "html"} 
@@ -30,15 +39,18 @@ ipRegEx = r"^((?:(?:(?:(?:(?:(?:(?:[0-9a-fA-F]{1,4})):){6})(?:(?:(?:(?:(?:[0-9a-
 ValidHostnameRegex = r"(?:[a-z0-9](?:[a-z0-9-_]{0,61}[a-z0-9])?\.)+[a-z0-9][a-z0-9-_]{0,61}[a-z0-9]"
 
 
+######################
+##### ip-info API ####
+######################
+
 # if not used, limited number of requests
 #ip_auth_token="f6157341b9e078"  # medikem token
 ip_auth_token="6b3b15bcf578ec"  # seznam token
 #ip_auth_token="7b7427498417ed"  # medikem token
 
-# pip install git+https://github.com/rthalley/dnspython
+########################
 
-
-class Data_loader:
+class Data_loader:  
     def get_hostnames(self, file_path, position, max=1000):
         with open(file_path, newline='') as csvfile:
             spamreader = csv.reader(csvfile, delimiter=',', quotechar='|')
@@ -88,10 +100,10 @@ class Data_loader:
                 try:
                     retrieved = urllib.request.urlretrieve(source, filename=None)
                 except urllib.error.HTTPError as e:
-                    print(str(e) + " " + source, file=sys.stderr)
+                    #print(str(e) + " " + source, file=sys.stderr)
                     continue
                 except urllib.error.URLError as e:
-                    print(str(e) + " " + source,file=sys.stderr)
+                    #print(str(e) + " " + source,file=sys.stderr)
                     continue
                 # retrieved file
                 file_tmp = retrieved[0]
@@ -137,7 +149,7 @@ class Data_loader:
         return hostnames
 
 class Base_parser:
-    def __init__(self, hostname, resolver_timeout: int ):
+    def __init__(self, hostname, resolver_timeout):
         print("[Info]: Starting resolver for:", hostname)
         self.timeout = resolver_timeout
         self.hostname = hostname
@@ -328,7 +340,6 @@ def geo_corrector(collection):
 
 
 # If script is launched explicitly as main, it can be used to fill database with 
-# training data
 if __name__ == '__main__':
 
     l = Data_loader()

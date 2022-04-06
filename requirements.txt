@@ -20,4 +20,6 @@ pickle
 dotenv
 logging
 dns.resolver
+OpenSSL
+datetime
 git+https://github.com/rthalley/dnspython

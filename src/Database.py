@@ -1,14 +1,22 @@
-
-
-# Custom module for databse usage
-# requires to configure connection in connection string
-
+""" File: Database.py
+    Author: Jan Polisensky
+    ----
+    Custom module providing abstraction over mongo db
+"""
 
 from pymongo import MongoClient
 import pymongo
 
 
 class Database:
+	"""
+        Class providing functions for DB manipulation
+        ...
+        Attributes
+        ----------
+                database -> valid database in local-mongo DB
+
+        """ 
 
 	def __init__(self, database_name):
 		client = MongoClient("mongodb://localhost/domains")
@@ -34,6 +42,7 @@ class Database:
 
 		domain_collection.replace_one({'name': data['name']}, data, upsert=True)
 
+	# Compute stats from goodDomains and badDomains collection
 	def get_stats(self, collection_list = ["goodDomains", "badDomains"]):
 		if len(collection_list[0]) == 1:
 			print("[Warning]: assuming argument as one collection")

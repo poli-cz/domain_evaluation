@@ -109,18 +109,9 @@ class SSL_loader:
 			print("[Fatal]: error closing socket")
 
 		return [chain, version]
-	'''		
-	Parameters
-	----------
-	bigram_list : list
-			Encoding a list of bigrams to the list of integers
-			If bigram is not in the dictionary, it replaces with 1 (out of vocabulary token).
 
-	Returns
-	-------
-	bigram_int : list
-			list of integers.
-	'''        
+
+
 	def get_cert(self):
 		host = self.domain
 		certsAndHosts = {}

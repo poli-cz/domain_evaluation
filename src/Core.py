@@ -1,4 +1,12 @@
-# Import basic modules and libraries
+""" File: Core.py
+    Author: Jan Polisensky
+    ----
+    Abstraction over data resolver, machine learning models etc
+    Provides interface over many modules
+"""
+
+
+# Import generic modules
 import json
 import time
 import re
@@ -18,15 +26,13 @@ from os import getenv
 import logging
 
 
-
-# Load custom modules
+# Import custom modules
 import Database
 from Data_loader import Base_parser
 import SSL_loader
 import Lex
-from Lex import Net
+from Lex import Net, Lexical_analysis
 from Preprocessor import preprocess 
-
 
 
 class clasifier:   
@@ -35,49 +41,24 @@ class clasifier:
         ...
         Attributes
         ----------
-        domain_name : str
-                a formatted string to print out what the animal says   
-
-
-        Methods
-        -------
-        load_data(hostname:str) -> dict
-                Get combined prediction using all three models
-                Returns dictionary with prediction percentage value
-
-        get_lexical() -> dict
-                Get prediction based only on lexical model
-        
-        get_svm() -> dict
-                Get prediction based only on support vector machine model
-        
-        get_data() -> dict
-                Get prediction based only on data model
-
-        get_mixed(data) -> None
-                Outputs data to JSON file
-
-        preload_data(data) -> None
-                Output JSON to STDOUT
-
-        get_raw(data) -> None
-                Output JSON to STDOUT
-
+                .env file is required for setup resolver timeout, db-connection string, etc, 
+                for details see readme
 
         """     
         def __init__(self) -> None:
-            load_dotenv()
-            self.models = getenv("MODELS_FOLDER")
-            self.hostname = None
-            self.data = None
-            self.loaded_data = False
-            self.accuracy = 0
-                  
-        def load_data(self, hostname: str):
+                load_dotenv()
+                self.models = getenv("MODELS_FOLDER")
+                self.resolver_timeout = int(getenv("RESOLVER_TIMEOUT"))
+                self.hostname = None
+                self.data = None
+                self.loaded_data = False
+                self.accuracy = 0
+        
+        # Function to load domain data
+        def load_data(self, hostname: str) -> None:
                 if not self.reset_data(hostname):
                         return self.data
 
-                self.resolver_timeout = int(getenv("RESOLVER_TIMEOUT"))
                 domain = Base_parser(hostname, self.resolver_timeout)
 
                 domain.load_dns_data()
@@ -90,16 +71,18 @@ class clasifier:
                 whois_data = domain.get_whois_data()
                 ssl_data = domain.get_ssl_data()
 
-                self.accuracy = np.around((Lex.is_empty(dns_data) + Lex.is_empty(geo_data) + Lex.is_empty(whois_data) + Lex.is_empty(ssl_data))/4, 3)
+                self.accuracy = np.around((self.is_empty(dns_data) + self.is_empty(geo_data) + self.is_empty(whois_data) + self.is_empty(ssl_data))/4, 3)
 
                 print("[Info]: All data collected, data loss: ", np.around((1-self.accuracy)*100, 2), " %")
 
                 in_data = {"name": hostname, "dns_data": dns_data, "geo_data": geo_data, "whois_data": whois_data, "ssl_data": ssl_data}
                 
-                self.data = Lex.process_data(in_data)
+                lex = Lexical_analysis()
+                self.data = lex.process_data(in_data)
 
                 self.loaded_data = True
         
+         # Prediction with lexical model
         def get_lexical(self, hostname: str) -> float:
                 self.lexical_model = tf.saved_model.load(self.models + '/domain_bigrams-furt-2020-11-07T11_09_21')
                 parse = preprocess()
@@ -167,13 +150,30 @@ class clasifier:
                 
                 return prediction, self.accuracy
 
+        # Loads domain data, usefull if you already have database with fetched data
+        # Param data: JSON object representing domain data, for exact form see README
         def preload_data(self, data: list, hostname: str) -> None:
                 self.hostname = hostname
                 self.data = data
                 self.loaded_data = True
 
+        # Only fetched domain data and returns them
         def get_raw(self, hostname: str):
-                pass
+                domain = Base_parser(hostname, self.resolver_timeout)
+
+                domain.load_dns_data()
+                domain.load_geo_info()
+                domain.load_whois_data()
+                domain.load_ssl_data()
+
+                dns_data = domain.get_dns()
+                geo_data = domain.get_geo_data()
+                whois_data = domain.get_whois_data()
+                ssl_data = domain.get_ssl_data()
+
+                raw_data = {"name": hostname, "dns_data": dns_data, "geo_data": geo_data, "whois_data": whois_data, "ssl_data": ssl_data}
+
+                return raw_data
 
         # Reset data loader
         def reset_data(self, hostname: str) -> bool:
@@ -186,3 +186,16 @@ class clasifier:
                         return True
                 else:
                         return False
+
+        # Define percentage of loss in data-category(whois/ssl/dns)
+        def is_empty(self, data: dict) -> float:
+                counter=0
+                empty=0
+                if data == None:
+                        return True
+                for item in data.values():
+                        if item == None:
+                                empty+=1
+                        counter+=1
+
+                return (1-(float(empty)/counter))

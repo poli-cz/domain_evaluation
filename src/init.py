@@ -1,3 +1,10 @@
+""" File: init.py
+    Author: Jan Polisensky
+    ----
+    Example usage of classifier core module
+"""
+
+
 # Import basic modules and libraries
 import json
 import os
@@ -24,37 +31,17 @@ class resolver:
     Attributes
     ----------
     domain_name : str
-        a formatted string to print out what the animal says   
-
-
-    Methods
-    -------
-    get_combined() -> dict
-        Get combined prediction using all three models
-        Returns dictionary with prediction percentage value
-
-    get_lexical() -> dict
-        Get prediction based only on lexical model
-    
-    get_svm() -> dict
-        Get prediction based only on support vector machine model
-    
-    get_data() -> dict
-        Get prediction based only on data model
-
-    output_json(data) -> None
-        Outputs data to JSON file
-
-    output_stdout(data) -> None
-        Output JSON to STDOUT
+        string containing domain name  
 
     """
 
-    def __init__(self, domain_name):
+    def __init__(self, domain_name) -> None:
         self.cls = clasifier()
         self.domain_name = domain_name
 
-    def get_combined(self):
+    # Get combined prediction, details can be found in REDME or documentation
+    # Returns -> dictionary containg prediction of domain badnes
+    def get_combined(self) -> dict:
         lexical = self.cls.get_lexical(self.domain_name)
         data_based = self.cls.get_data(self.domain_name)
         svm = self.cls.get_svm(self.domain_name)
@@ -79,7 +66,9 @@ class resolver:
         }
         return rating
 
-    def get_lexical(self):
+    # Get prediction based only on lexical features(does not need to fetch any data)
+    # Returns -> dictionary containg prediction of domain badnes
+    def get_lexical(self) -> dict:
         lexical = self.cls.get_lexical(self.domain_name)
         lexical = np.around(lexical, 3)
         rating = {
@@ -89,7 +78,9 @@ class resolver:
 
         return rating
 
-    def get_svm(self):
+    # Get prediction from SVM model
+    # Returns -> dictionary containg prediction of domain badnes
+    def get_svm(self) -> dict:
         svm = self.cls.get_svm(self.domain_name)
         svm = np.around(svm, 3)
         rating = {
@@ -99,7 +90,9 @@ class resolver:
 
         return rating
 
-    def get_data(self):
+    # Get prediction based on main Data model
+    # Returns -> dictionary containg prediction of domain badnes
+    def get_data(self) -> dict:
         data_based = self.cls.get_data(self.domain_name)
         data_based = np.around(data_based, 3)
         rating = {
@@ -109,13 +102,15 @@ class resolver:
 
         return rating
 
-    def output_json(self, data):
+    # Param data: JSON object to be printed to output file
+    def output_json(self, data) -> None:
         rating_json = json.dumps(data, indent = 4)
 
         with open(self.domain_name + '.json', "w") as outfile:
             outfile.write(rating_json)
 
-    def output_stdout(self, data):
+    # Param data: JSON object to be printed to STDOUT
+    def output_stdout(self, data) -> None:
         print(json.dumps(data, indent = 4))
         
 
@@ -141,7 +136,6 @@ if __name__ == "__main__":
     m_silent = args.silent
     m_stdout = args.stdout
 
-
     if [m_lexical, m_data_based, m_svm].count(True) > 1:
         print("[Error]: Can use only one classification mode")
         exit(1)
@@ -151,8 +145,7 @@ if __name__ == "__main__":
         f = open(os.devnull, 'w')
         sys.stdout = f
     
-
-    # Starting main resolver
+    ### Starting main resolver ###
     res = resolver(domain_name)
 
     if m_lexical:
