@@ -2,11 +2,15 @@
 System for evaluation risk of internet domains
 
 ### Usage
-- Collection of python scripts for data-preparation with connection to misp
+- Example usage can be found in: usage_example.sh
 
 
 ### Directories
 - **./mongo** Saved mongo collections
-- **./src/data**  Saved domains, and data resources
+- **./src/**  Implementation
 - **./doc** Documentation
+
+### Instalation
+- pip3 install -r requirements.txt
+
 
