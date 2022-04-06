@@ -1,6 +1,7 @@
 # Import basic modules and libraries
 import json
 import os
+import sys
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
 import numpy as np
 import argparse
@@ -16,9 +17,39 @@ from Preprocessor import preprocess
 from Core import clasifier
 
 
-
-### Class for controling core module ###
 class resolver:
+    """
+    Class for controling core module 
+    ...
+    Attributes
+    ----------
+    domain_name : str
+        a formatted string to print out what the animal says   
+
+
+    Methods
+    -------
+    get_combined() -> dict
+        Get combined prediction using all three models
+        Returns dictionary with prediction percentage value
+
+    get_lexical() -> dict
+        Get prediction based only on lexical model
+    
+    get_svm() -> dict
+        Get prediction based only on support vector machine model
+    
+    get_data() -> dict
+        Get prediction based only on data model
+
+    output_json(data) -> None
+        Outputs data to JSON file
+
+    output_stdout(data) -> None
+        Output JSON to STDOUT
+
+    """
+
     def __init__(self, domain_name):
         self.cls = clasifier()
         self.domain_name = domain_name
@@ -28,7 +59,7 @@ class resolver:
         data_based = self.cls.get_data(self.domain_name)
         svm = self.cls.get_svm(self.domain_name)
 
-        combined, accuracy = self.cls.get_mixed(self.domain_name) # combining all three models, described in documentation
+        combined, accuracy = self.cls.get_mixed(self.domain_name) 
 
 
         combined = np.around(combined, 3)
@@ -47,7 +78,6 @@ class resolver:
             "accuracy": accuracy
         }
         return rating
-
 
     def get_lexical(self):
         lexical = self.cls.get_lexical(self.domain_name)
@@ -89,6 +119,8 @@ class resolver:
         print(json.dumps(data, indent = 4))
         
 
+
+
 if __name__ == "__main__":
     ### Supported arguments ###
     parser = argparse.ArgumentParser(description='domain name analysis tool')
@@ -114,6 +146,13 @@ if __name__ == "__main__":
         print("[Error]: Can use only one classification mode")
         exit(1)
 
+    if m_silent:
+
+        f = open(os.devnull, 'w')
+        sys.stdout = f
+    
+
+    # Starting main resolver
     res = resolver(domain_name)
 
     if m_lexical:
@@ -128,7 +167,6 @@ if __name__ == "__main__":
     else:
         r_data = res.get_combined()
 
-    
     if not m_stdout:
         res.output_json(r_data)
     else:

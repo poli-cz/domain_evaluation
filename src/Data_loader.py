@@ -4,6 +4,7 @@ import concurrent.futures
 import dns.resolver
 import requests
 import json
+import sys
 
 import urllib
 import re
@@ -87,10 +88,10 @@ class Data_loader:
                 try:
                     retrieved = urllib.request.urlretrieve(source, filename=None)
                 except urllib.error.HTTPError as e:
-                    print(str(e) + " " + source)
+                    print(str(e) + " " + source, file=sys.stderr)
                     continue
                 except urllib.error.URLError as e:
-                    print(str(e) + " " + source)
+                    print(str(e) + " " + source,file=sys.stderr)
                     continue
                 # retrieved file
                 file_tmp = retrieved[0]
@@ -137,6 +138,7 @@ class Data_loader:
 
 class Base_parser:
     def __init__(self, hostname, resolver_timeout: int ):
+        print("[Info]: Starting resolver for:", hostname)
         self.timeout = resolver_timeout
         self.hostname = hostname
         self.dns = None
@@ -147,8 +149,8 @@ class Base_parser:
 
         self.dns_resolver = dns.resolver.Resolver()
         self.dns_resolver.nameservers = ["8.8.8.8", "8.8.4.4"]
-        self.dns_resolver.timeout = 10
-        self.dns_resolver.lifetime = 10
+        self.dns_resolver.timeout = resolver_timeout
+        self.dns_resolver.lifetime = resolver_timeout
 
     def get_dns(self):
         return self.dns
@@ -182,7 +184,7 @@ class Base_parser:
             return True
 
         except Exception as e:
-            print("Failed to get some whois data, continue without them")
+            #print("[Info]: Resolver can load all whois data")
             return False
 
     def load_dns_data(self):
@@ -214,11 +216,11 @@ class Base_parser:
         #print("Loading Geo info data")
         if ip is None:
             if self.ip is None:
-                print("Ip of hostname not discovered, doing it manualy...")
+                #print("Ip of hostname not discovered, doing it manualy...")
                 try:
                     self.ip = self.ip_from_host()[self.hostname][0]
                 except:
-                    print("Hostname cannot be resolved")
+                    print("[Info]: Cant resolve hostname to IP")
                 return False
         else:
             self.ip = ip
@@ -321,11 +323,12 @@ def geo_corrector(collection):
                 print(domain['name'])
                 print(bad_domain_collection.replace_one({'name': domain['name']}, domain, upsert=True))
                 print("corrected")
-fetched = True
 
 
 
 
+# If script is launched explicitly as main, it can be used to fill database with 
+# training data
 if __name__ == '__main__':
 
     l = Data_loader()
@@ -333,11 +336,13 @@ if __name__ == '__main__':
 
     d = Database.Database('domains')
     allDomains = d.return_db()
+    fetched = True
 
 
 
     if not fetched:
         ### Fetch data ###
+        ### Load data from links ###
         raw_blacklisted = l.get_links('../Data/blacklists-2021.01.csv')
         good_hostnames = l.get_hostnames('../Data/top-1m.csv', 1, 100000)
         bad_hostnames_1 = l.get_hostnames_from_links(raw_blacklisted)

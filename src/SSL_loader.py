@@ -18,18 +18,7 @@ import Database
 from datetime import timedelta
 
 
-'''		
-Parameters
-----------
-bigram_list : list
-		Encoding a list of bigrams to the list of integers
-		If bigram is not in the dictionary, it replaces with 1 (out of vocabulary token).
-
-Returns
--------
-bigram_int : list
-list of integers.
-'''       
+  
 class SSL_loader:
 
 	def __init__(self, domain_name, resolver_timeout: int):
@@ -66,6 +55,7 @@ class SSL_loader:
 		"""
 		global version 
 
+		cant_load = True
 		cont = OpenSSL.SSL.Context(OpenSSL.SSL.SSLv23_METHOD)
 		cont.set_timeout(self.timeout)
 		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -83,24 +73,29 @@ class SSL_loader:
 			sock.set_tlsext_host_name(str.encode(host))
 			sock.do_handshake()
 		except socket.gaierror as e:
-			print("[Info]: SSL loader error")
-			print(str(e))
+			if cant_load:
+				#print("[Info]: SSL loader cant load all data")
+				cant_load = False
 			return None
 		except socket.timeout as e:
-			print("[Info]: SSL loader error")
-			print(str(e))
+			if cant_load:
+				#print("[Info]: SSL loader cant load all data")
+				cant_load = False
 			return None
 		except OpenSSL.SSL.Error as e:
-			print("[Info]: SSL loader error")
-			print(str(e))
+			if cant_load:
+				#print("[Info]: SSL loader cant load all data")
+				cant_load = False
 			return None
 		except ConnectionRefusedError as e:
-			print("[Info]: SSL loader error")
-			print(str(e))
+			if cant_load:
+				#print("[Info]: SSL loader cant load all data")
+				cant_load = False
 			return None
 		except OSError as e:
-			print("[Info]: SSL loader error")
-			print(str(e))
+			if cant_load:
+				#print("[Info]: SSL loader cant load all data")
+				cant_load = False
 			return None
 
 
@@ -111,7 +106,7 @@ class SSL_loader:
 			sock.shutdown()
 			sock.close()
 		except:
-			print("error closing socket")
+			print("[Fatal]: error closing socket")
 
 		return [chain, version]
 	'''		
@@ -193,8 +188,10 @@ def insert_ssl_data(ssl_data, domain_name):
 	domain_collection.replace_one({'name': domain_name},data, upsert=True)
 
 
+
+# 
 def discover_ssl(name, timeout: int):
-	#print(name)
+	print("[Info]: SSL discovery started")
 	s = SSL_loader(name, timeout)
 
 	ssl_data = {
@@ -220,7 +217,6 @@ def discover_ssl(name, timeout: int):
 			url = "www." + name
 			_domCert = data[url][0]
 		except:
-			print("Cant connect to this ip")
 			return ssl_data
 		
 	ssl_data['is_ssl'] = True

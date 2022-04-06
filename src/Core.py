@@ -15,6 +15,7 @@ from array import array
 import pickle
 from dotenv import load_dotenv
 from os import getenv
+import logging
 
 
 
@@ -28,23 +29,50 @@ from Preprocessor import preprocess
 
 
 
-class clasifier:        
+class clasifier:   
+        """
+        Core class, controling models, data resolving etc..
+        ...
+        Attributes
+        ----------
+        domain_name : str
+                a formatted string to print out what the animal says   
+
+
+        Methods
+        -------
+        load_data(hostname:str) -> dict
+                Get combined prediction using all three models
+                Returns dictionary with prediction percentage value
+
+        get_lexical() -> dict
+                Get prediction based only on lexical model
+        
+        get_svm() -> dict
+                Get prediction based only on support vector machine model
+        
+        get_data() -> dict
+                Get prediction based only on data model
+
+        get_mixed(data) -> None
+                Outputs data to JSON file
+
+        preload_data(data) -> None
+                Output JSON to STDOUT
+
+        get_raw(data) -> None
+                Output JSON to STDOUT
+
+
+        """     
         def __init__(self) -> None:
             load_dotenv()
-            self.mode = getenv("MODE")
             self.models = getenv("MODELS_FOLDER")
-
             self.hostname = None
             self.data = None
             self.loaded_data = False
             self.accuracy = 0
-            
-
-            if self.mode not in ['lexical', 'data', 'svm', 'mixed']:
-                    print("[Error]: Invalid classification mode")
-                    exit(1)
-
-        
+                  
         def load_data(self, hostname: str):
                 if not self.reset_data(hostname):
                         return self.data
@@ -64,15 +92,14 @@ class clasifier:
 
                 self.accuracy = np.around((Lex.is_empty(dns_data) + Lex.is_empty(geo_data) + Lex.is_empty(whois_data) + Lex.is_empty(ssl_data))/4, 3)
 
+                print("[Info]: All data collected, data loss: ", np.around((1-self.accuracy)*100, 2), " %")
+
                 in_data = {"name": hostname, "dns_data": dns_data, "geo_data": geo_data, "whois_data": whois_data, "ssl_data": ssl_data}
                 
                 self.data = Lex.process_data(in_data)
 
                 self.loaded_data = True
         
-
-
-
         def get_lexical(self, hostname: str) -> float:
                 self.lexical_model = tf.saved_model.load(self.models + '/domain_bigrams-furt-2020-11-07T11_09_21')
                 parse = preprocess()
@@ -82,7 +109,7 @@ class clasifier:
                 for i in range(iter):
                         bigrams.append(0)
                 if len(bigrams) > 43:
-                        print("[Error]: Domain name to long, cant fit lexical model")
+                        print("[Error]: Domain name to long, cant fit lexical model", file=sys.stderr)
                         exit(1)  
 
                 in_data = np.array([bigrams], dtype=np.float32)
@@ -90,22 +117,20 @@ class clasifier:
                 # Lexical models use inverse value
                 return float(1 - self.lexical_model(in_data))
 
-
         # Prediction with support vector machines model
         def get_svm(self, hostname: str) -> float:
                 self.load_data(hostname)
-                svm_model = pickle.load(open(self.models + '/svm_model.smv', 'rb'))
+                svm_model = pickle.load(open(self.models + '/svm_final.svm', 'rb'))
 
                 np_input = np.array([self.data], dtype=np.float32)
                 prediction = svm_model.predict(np_input)
 
                 return float(prediction)
 
-
         # Prediction with data-based model
         def get_data(self, hostname: str) -> float:
                 self.load_data(hostname)
-                data_model = torch.load(self.models + '/net_0.149_err.pt')
+                data_model = torch.load(self.models + '/v1.3_0.12err.pt')
 
                 torch_input = torch.tensor(self.data)
                 prediction = data_model(torch_input)
@@ -116,6 +141,7 @@ class clasifier:
         def get_mixed(self, hostname: str):
                 self.load_data(hostname)
 
+                print("[Info]: Loading models")
                 # get predictions of all three models
                 data = self.get_data(hostname)
                 svm = self.get_svm(hostname)
@@ -148,7 +174,6 @@ class clasifier:
 
         def get_raw(self, hostname: str):
                 pass
-
 
         # Reset data loader
         def reset_data(self, hostname: str) -> bool:
