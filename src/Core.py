@@ -24,7 +24,6 @@ import pickle
 from dotenv import load_dotenv
 from os import getenv
 import logging
-import threading
 
 
 # Import custom modules
@@ -62,17 +61,10 @@ class clasifier:
 
                 domain = Base_parser(hostname, self.resolver_timeout)
 
-
-                # with threading 
-                threading.Thread(target=domain.load_dns_data(), args=(1,)).start()
-                threading.Thread(target=domain.load_whois_data(), args=(1,)).start()
-                threading.Thread(target=domain.load_ssl_data(), args=(1,)).start()
-                
-
-                # without threading
-                # domain.load_geo_info()
-                # domain.load_whois_data()
-                # domain.load_ssl_data()
+                domain.load_dns_data()
+                domain.load_geo_info()
+                domain.load_whois_data()
+                domain.load_ssl_data()
 
                 dns_data = domain.get_dns()
                 geo_data = domain.get_geo_data()
