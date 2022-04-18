@@ -92,7 +92,7 @@ class clasifier:
                 for i in range(iter):
                         bigrams.append(0)
                 if len(bigrams) > 43:
-                        print("[Error]: Domain name to long, cant fit lexical model", file=sys.stderr)
+                        print("[Error]: Domain name to long, cant fit lexical model")
                         exit(1)  
 
                 in_data = np.array([bigrams], dtype=np.float32)
