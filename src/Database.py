@@ -4,6 +4,8 @@
     Custom module providing abstraction over mongo db
 """
 
+from dotenv import load_dotenv
+from os import getenv
 from pymongo import MongoClient
 import pymongo
 
@@ -19,7 +21,9 @@ class Database:
         """ 
 
 	def __init__(self, database_name):
-		client = MongoClient("mongodb://localhost/domains")
+		load_dotenv()
+		connection_string = getenv("CONNECTION_STRING")
+		client = MongoClient(connection_string)
 		self.db = client[database_name]
 
 	def return_collection(self, collection):

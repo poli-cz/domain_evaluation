@@ -1,4 +1,8 @@
-
+""" File: Net.py
+    Author: Jan Polisensky
+    ----
+    Modules for neural network training
+"""
   
 import torch.nn as nn
 import torch.nn.functional as F
@@ -133,10 +137,12 @@ if __name__ == "__main__":
     dataset = list()
     counter =0
 
+    dataset_len = len(merged)
+
 
     # split to testset and dataset
     for piece in merged:
-        if counter < 5000:
+        if counter < dataset_len*0.2:
             testset.append(piece)
         else:
             dataset.append(piece)

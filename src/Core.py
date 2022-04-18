@@ -30,8 +30,8 @@ import logging
 import Database
 from Data_loader import Base_parser
 import SSL_loader
-import Lex
-from Lex import Net, Lexical_analysis
+import Parser
+from Parser import Net, Lexical_analysis
 from Preprocessor import preprocess 
 
 
@@ -84,7 +84,7 @@ class clasifier:
         
          # Prediction with lexical model
         def get_lexical(self, hostname: str) -> float:
-                self.lexical_model = tf.saved_model.load(self.models + '/domain_bigrams-furt-2020-11-07T11_09_21')
+                self.lexical_model = tf.saved_model.load(self.models + '/bigrams_final')
                 parse = preprocess()
                 bigrams = parse.preprocessing(hostname)
 

@@ -18,8 +18,8 @@ import argparse
 import Database
 from Data_loader import Base_parser
 import SSL_loader
-import Lex
-from Lex import Net
+import Parser
+from Parser import Net
 from Preprocessor import preprocess 
 from Core import clasifier
 
