@@ -87,8 +87,10 @@ class preprocess:
 				#domain_str = urlDecode(domain_str)
 				### lower case
 				domain_low = domain_str.lower()
+				### Rotate domain to form <tld>.<domain_name>
+				domain_rotated = self.rotate_domain(domain_low)
 				### replace characters: numbers with 0
-				domain0 = re.sub('\d', '0', domain_low)
+				domain0 = re.sub('\d', '0', domain_rotated)
 				### replace non-ascii with ?
 				domain_ascii = re.sub(r'[^\.\-0-9a-z]','?', domain0)
 				### create bigrams
@@ -97,3 +99,16 @@ class preprocess:
 				int_list = self.bigrams2int(bigrams) # list of integers
 										
 				return int_list
+		
+		def rotate_domain(self, domain_name):
+			splited = domain_name.split('.')
+
+			rotated = ''
+			max = len(splited)
+			for i in range(max):
+				if i == (max-1):
+					rotated += splited[(max-1)-i] 
+				else:
+					rotated += splited[(max-1)-i] + '.'
+
+			return rotated
