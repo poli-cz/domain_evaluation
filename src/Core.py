@@ -35,6 +35,24 @@ from Parser import Net, Lexical_analysis
 from Preprocessor import preprocess 
 
 
+
+### constants for adjusting models ratio ###
+
+
+
+auto_weight = True
+## If set as FALSE, set desired weights ##
+lexical_weight = 0.1
+data_weight = 0.9
+svm_weight = 0.1
+
+
+
+## set grey zone for SVM prediction correction ##
+grey_zone_width = 0.1
+
+
+
 class clasifier:   
         """
         Core class, controling models, data resolving etc..
@@ -130,23 +148,38 @@ class clasifier:
                 svm = self.get_svm(hostname)
                 lexical = self.get_lexical(hostname)
 
-                # more data we have, more accurate is data-based models
-                prediction = data*self.accuracy + lexical*(1-self.accuracy)
+
+
+                if auto_weight:
+                        prediction = float(data*self.accuracy + lexical*(1-self.accuracy))
+                else:
+                        prediction = float((data_weight*data + lexical_weight*lexical) / (data_weight+lexical_weight))
+
+
 
                 # svm acts like corrector
-                if svm > 0.9:
+                if svm > (1 - grey_zone_width):
                         if prediction > 0.5:
                                 self.accuracy = (self.accuracy+1)/2
                                 prediction = prediction*(2/3)+1/3
                         else:
-                                prediction+=0.1
+                                prediction+=svm_weight
                                 self.accuracy = (self.accuracy+0.5)/2
-                else:
+
+                elif svm < (0.5 - grey_zone_width):
                         if prediction < 0.5:
                                 self.accuracy = (self.accuracy+1)/2
                         else:
-                                prediction-=0.1
+                                prediction-=svm_weight
                                 self.accuracy = (self.accuracy+0.5)/2
+
+                # Correction of bad results of prediction #
+                if prediction > 1:
+                        prediction = 1.00
+                elif prediction < 0:
+                        prediction = 0.00
+
+                        
                 
                 return prediction, self.accuracy
 
