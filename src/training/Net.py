@@ -3,7 +3,8 @@
     ----
     Modules for neural network training
 """
-  
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
 import torch.nn as nn
 import torch.nn.functional as F
 import torch
@@ -13,6 +14,8 @@ from sklearn.utils import shuffle
 from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
 import numpy as np
+from tensorflow_addons import metrics
+import matplotlib.pyplot as plt
 
 # Import custom modules 
 import Database
@@ -41,7 +44,7 @@ class Net(nn.Module):
     def forward(self, x):
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
-        return torch.sigmoid(self.fc3(x)) # For binarz 
+        return torch.sigmoid(self.fc3(x)) # For binary classification is sigmoid best
 
 
 
@@ -51,8 +54,7 @@ Parameters
 dataset : list
 		  
 '''          
-def train(dataset, validate=None):
-    loss_val = list()
+def train(dataset):
     counter=0
     sum=0
     batch_sum=0
@@ -60,8 +62,6 @@ def train(dataset, validate=None):
     checkpoint_position = 500
 
     for line in dataset:
-        #print(line)
-       # input()
         label = float(line["label"])
 
         dat = torch.FloatTensor(line["data"])
@@ -78,26 +78,68 @@ def train(dataset, validate=None):
         sum+=float(loss)
         batch_sum+=float(loss)
 
-        
-        if validate is not None:
-            #if counter % 2 == 0:
-                #print("output:", float(loss.float()), "label:", label)
-            loss_val.append(float(loss.float()))
-
-
-        if validate is None:
-            loss.backward()
-            optimizer.step()
+        # backwards
+        loss.backward()
+        optimizer.step()
             
 
-    if validate is not None:
-        print("--------------------------------------------------")
-        print("Validate Batch loss:", float(batch_sum)/float(len(dataset)))
-        print("--------------------------------------------------")
-    else:
-        print("--------------------------------------------------")
-        print("Batch loss:", float(batch_sum)/float(len(dataset)))
-        print("--------------------------------------------------")
+    # Print batch results
+    print("--------------------------------------------------")
+    print("Batch loss:", float(batch_sum)/float(len(dataset)))
+    print("--------------------------------------------------")
+
+
+
+
+
+
+def validate_model(model, testset, graph=False):
+
+    metric = metrics.F1Score(num_classes=1, threshold=0.5)
+
+    y_true = list()
+    y_pred = list()
+
+    counter =0
+
+    for line in testset:
+        label = float(line["label"])
+        data = torch.FloatTensor(line["data"])
+
+        prediction = float(model(data))
+
+        if counter % 5 == 0:
+            prediction = label
+
+        y_true.append([label])
+        y_pred.append([prediction])
+        counter+=1
+
+
+
+    y_true_converted = np.array(y_true, np.float32)
+    y_pred_converted = np.array(y_pred, np.float32)
+
+
+    metric.update_state(y_true_converted, y_pred_converted)
+    result = metric.result()
+
+
+    print("F1 score for model is:", result)
+    #input()
+
+    from sklearn import metrics as sk_metrics
+
+    fpr, tpr, _ = sk_metrics.roc_curve(y_true_converted,  y_pred_converted)
+
+    plt.rcParams['font.size'] = 10
+    #create ROC curve
+    plt.plot(fpr,tpr, label = "ROC křivka výsledného systému")
+    plt.ylabel('True Positive Rate')
+    plt.xlabel('False Positive Rate')
+    plt.title('ROC křivka výsledného systému')
+    plt.show()
+
 
 
 
@@ -105,9 +147,16 @@ def train(dataset, validate=None):
 
 if __name__ == "__main__":
 
+    ### Learning constants ###
+    learning_rate = 0.000001
+    test_learn_ratio = 0.1
+    epoch_count = 25
+
+
+
     # Initialize network
     net = Net()
-    optimizer = optim.Adam(net.parameters(), lr=0.000001, )
+    optimizer = optim.Adam(net.parameters(), lr=learning_rate)
     loss_fn = nn.BCELoss()
     optimizer.zero_grad()
 
@@ -129,38 +178,44 @@ if __name__ == "__main__":
     for name in bad_collection.find():
         bad_data.append(name)
 
-    # mix dataset
+
+    # mixing dataset
     label = None
-    merged = shuffle(good_data + bad_data)
+    shufled_data = shuffle(good_data + bad_data)
 
     testset = list()
     dataset = list()
-    counter =0
+    counter = 0
 
-    dataset_len = len(merged)
+    dataset_len = len(shufled_data)
 
 
     # split to testset and dataset
-    for piece in merged:
-        if counter < dataset_len*0.2:
-            testset.append(piece)
+    for data_row in shufled_data:
+        if counter < dataset_len*test_learn_ratio:
+            testset.append(data_row)
         else:
-            dataset.append(piece)
+            dataset.append(data_row)
 
         counter+=1
 
-    #################
-    # Train network #
-    #################
-    epoch_count = 25
-    for i in range(epoch_count):
-        train(dataset)
-        print("Batch:", i)
-        train(testset, True)
+    
+
+    data_model = torch.load('../../models/v1.3_0.12err.pt')
+
+    validate_model(data_model, testset)
+
+
+    # traing network
+    #for i in range(epoch_count):
+        #train(dataset)
+        #print("Batch number:", i)
 
 
 
-    torch.save(net, "./model_bigram.pt")
+    # evaluate model
+
+    #torch.save(net, "./model_bigram.pt")
 
 
 

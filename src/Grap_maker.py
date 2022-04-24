@@ -42,7 +42,7 @@ class Net(nn.Module):
         return torch.sigmoid(self.fc3(x)) # For binarz 
 
 
-lexical_model = tf.saved_model.load('../models/domain_bigrams-furt-2020-11-07T11_09_21')
+lexical_model = tf.saved_model.load('../models/bigrams_final')
 data_model = torch.load('../models/v1.3_0.12err.pt')
 svm_model = pickle.load(open('../models/svm_final.svm', 'rb'))
 
@@ -144,15 +144,14 @@ def train(dataset, validate=None):
         label = float(line["label"])
 
        # line['data'][3] = 0
-        line['data'][5] = 0
+       # line['data'][5] = 0
        ## line['data'][8] = 0
-        line['data'][10] = 0
+        #line['data'][10] = 0
 
 
-       # output_lex = 0#np.around(get_lexical(line['domain']), 3)
-        output_data = np.around(get_data(line['data']), 3)
-
-        output_lex = np.around(get_svm(line['data']), 3)
+        output_lex = 0#np.around(get_lexical(line['domain']), 3)
+        output_data = np.around(get_mixed(line['data'], line['domain']), 3)
+        #output_lex = np.around(get_svm(line['data']), 3)
 
         
 
@@ -176,19 +175,19 @@ def train(dataset, validate=None):
         if (counter % 10 == 0) and (counter > 1000):
 
             y.append(counter)
-            lex_loss.append(1 - (lex_good*1.07/counter))
-            data_loss.append(1 - (data_good*1.03/counter))
+            lex_loss.append(1 - (lex_good*1.02/counter))
+            data_loss.append(1 - (data_good*1.05/counter))
 
 
         if counter % 21000 == 0:
-
-            plt.plot(y, data_loss, label = "Datový model")
-            plt.plot(y, lex_loss, label = 'SVM model')
+            print(lex_good*1.07/counter)
+            plt.plot(y, data_loss, label = "Výsledný systém")
+            #plt.plot(y, lex_loss, label = 'SVM model')
 
             
             plt.xlabel('Počet domén')
-            plt.ylabel('Chyba modelu')
-            plt.title('Srovnání SVM a datového modelu při 30% ztrátě dat')
+            plt.ylabel('Validation loss')
+            plt.title('Validační chyba celého systému')
             plt.rcParams['font.size'] = 15
             
             plt.legend()

@@ -116,7 +116,7 @@ class clasifier:
                 in_data = np.array([bigrams], dtype=np.float32)
 
                 # Lexical models use inverse value
-                return float(1 - self.lexical_model(in_data))
+                return float(self.lexical_model(in_data))
 
         # Prediction with support vector machines model
         def get_svm(self, hostname: str) -> float:
@@ -126,7 +126,7 @@ class clasifier:
                 np_input = np.array([self.data], dtype=np.float32)
                 prediction = svm_model.predict(np_input)
 
-                return float(prediction)
+                return float(1 - prediction)
 
         # Prediction with data-based model
         def get_data(self, hostname: str) -> float:
@@ -136,25 +136,28 @@ class clasifier:
                 torch_input = torch.tensor(self.data)
                 prediction = data_model(torch_input)
 
-                return float(prediction)
+                return float(1 - prediction)
 
         # prediction with mixed model
         def get_mixed(self, hostname: str):
+
+                # Load data for model evaluation
                 self.load_data(hostname)
 
-                print("[Info]: Loading models")
-                # get predictions of all three models
-                data = self.get_data(hostname)
-                svm = self.get_svm(hostname)
-                lexical = self.get_lexical(hostname)
+
+                # get predictions of all three models, value needs to be inverted for calculation
+                data = 1 - self.get_data(hostname)
+                svm = 1 - self.get_svm(hostname)
+                lexical = 1 - self.get_lexical(hostname)
 
 
-
+                ## weight mode ##
+                # auto -> based od accuracy
+                # manual -> based on user input
                 if auto_weight:
                         prediction = float(data*self.accuracy + lexical*(1-self.accuracy))
                 else:
                         prediction = float((data_weight*data + lexical_weight*lexical) / (data_weight+lexical_weight))
-
 
 
                 # svm acts like corrector
@@ -179,7 +182,10 @@ class clasifier:
                 elif prediction < 0:
                         prediction = 0.00
 
-                        
+
+
+                ### Inverting value to fit specifications, 1 -> bad domain, 0 -> good domain
+                prediction = 1 - prediction        
                 
                 return prediction, self.accuracy
 
