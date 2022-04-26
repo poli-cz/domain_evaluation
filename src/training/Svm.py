@@ -55,7 +55,9 @@ dataset : list
 		  
 ''' 
 def validate_model(model, testset, graph=False):
-    pass
+
+    # Compute F1 metric for system evaluation
+    metric = metrics.F1Score(num_classes=1, threshold=0.5)
 
 
 
@@ -103,7 +105,7 @@ if __name__ == '__main__':
 
     x_dataset = list()
     y_dataset = list()
-    counter =0
+    counter = 0
 
     dataset_len = len(shufled_data)
 
