@@ -2,7 +2,7 @@
 System for evaluation risk of internet domains
 
 ### Usage
-- Example usage can be found in: usage_example.sh
+- Example usage can be found in: backend_usage_example.sh
 - Module init.py provides simple abstraction over clasifier modules
 - Supported parameters for init.py are:
 - --silent dont print status outputs

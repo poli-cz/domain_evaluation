@@ -13,6 +13,9 @@ app.use(expressLayouts)
 app.use(express.static( path.join(__dirname, '/public')))
 
 
+const backend_path = "./src"
+
+
 
 
 app.post('/all', async(req, res)=>{
@@ -30,7 +33,7 @@ app.post('/all', async(req, res)=>{
     }
 
 
-    let cached = ['fitcrack.fit.vutbr.cz', 'bio-senpai.ovi.moe', 'danbooru.donmai.us', 'fit.vut.cz']
+    let cached = ["none"]
 
     if(cached.includes(domain_name)){
 	    reload = "off"
@@ -41,11 +44,11 @@ app.post('/all', async(req, res)=>{
 
 
     if(!fs.existsSync(path)){
-        shell.exec(`cd domain_evaluation/src && python3 init.py ${domain_name} --silent && mv ${domain_name}.json ../../sites`)
+        shell.exec(`cd ${backend_path} && python3 init.py ${domain_name} --silent && mv ${domain_name}.json ../sites`)
     }else{
         if(reload == 'on'){
             shell.exec(`rm ${path}`);
-            shell.exec(`cd domain_evaluation/src && python3 init.py ${domain_name} --silent && mv ${domain_name}.json ../../sites`)
+            shell.exec(`cd ${backend_path} && python3 init.py ${domain_name} --silent && mv ${domain_name}.json ../sites`)
         }else{
             console.log(`using cache for [${domain_name}]`)
             await sleep(5000);
@@ -75,6 +78,7 @@ app.post('/all', async(req, res)=>{
             return res.send({"Status": 200, "Data": domain_data})
         }
     }catch(error){
+        console.log(error)
         return res.send({"Status": 500, "Message": "Internal server error"})
     }
 
@@ -147,7 +151,7 @@ function api(req, res, mode){
     let domain_name = parse_domain(req,res)
 
     const path = `./${domain_name}.json`
-    shell.exec(`cd domain_evaluation/src && python3 init.py ${domain_name} ${mode} && mv ${domain_name}.json ../..`)
+    shell.exec(`cd ${backend_path} && python3 init.py ${domain_name} ${mode} && mv ${domain_name}.json ../`)
 
     try{
         if(!fs.existsSync(path)){
