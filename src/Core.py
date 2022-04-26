@@ -24,6 +24,7 @@ import pickle
 from dotenv import load_dotenv
 from os import getenv
 import logging
+import threading
 
 
 # Import custom modules
@@ -38,8 +39,6 @@ from Preprocessor import preprocess
 
 ### constants for adjusting models ratio ###
 
-
-
 auto_weight = True
 ## If set as FALSE, set desired weights ##
 lexical_weight = 0.1
@@ -50,6 +49,10 @@ svm_weight = 0.1
 
 ## set grey zone for SVM prediction correction ##
 grey_zone_width = 0.1
+
+
+## Constants required by models
+MAX_BIGRAM_LEN = 43
 
 
 
@@ -71,6 +74,15 @@ class clasifier:
                 self.data = None
                 self.loaded_data = False
                 self.accuracy = 0
+
+                # model for paralel data resolving
+                self.paralel = getenv("PARALEL")
+
+
+                # Load classification models
+                self.lexical_model_path = str(getenv("LEXICAL_MODEL"))
+                self.data_model_path = str(getenv("DATA_MODEL"))
+                self.svm_model_path = str(getenv("SVM_MODEL"))
         
         # Function to load domain data
         def load_data(self, hostname: str) -> None:
@@ -79,11 +91,23 @@ class clasifier:
 
                 domain = Base_parser(hostname, self.resolver_timeout)
 
-                domain.load_dns_data()
-                domain.load_geo_info()
-                domain.load_whois_data()
-                domain.load_ssl_data()
 
+                ### Paralel or sequestial data-load ###
+                if self.paralel == 'True':
+                        print("using paralel")
+                        threading.Thread(target=domain.load_dns_data).start()
+                        threading.Thread(target=domain.load_geo_info).start()
+                        threading.Thread(target=domain.load_whois_data).start()
+                        threading.Thread(target=domain.load_ssl_data).start()
+
+                else:
+                #sequential data load
+                        domain.load_dns_data()
+                        domain.load_geo_info()
+                        domain.load_whois_data()
+                        domain.load_ssl_data()
+
+                # Get loaded data #
                 dns_data = domain.get_dns()
                 geo_data = domain.get_geo_data()
                 whois_data = domain.get_whois_data()
@@ -102,14 +126,14 @@ class clasifier:
         
          # Prediction with lexical model
         def get_lexical(self, hostname: str) -> float:
-                self.lexical_model = tf.saved_model.load(self.models + '/bigrams_final')
+                self.lexical_model = tf.saved_model.load(self.models + '/' + self.lexical_model_path)
                 parse = preprocess()
                 bigrams = parse.preprocessing(hostname)
 
-                iter = 43 - len(bigrams)
+                iter = MAX_BIGRAM_LEN - len(bigrams)
                 for i in range(iter):
                         bigrams.append(0)
-                if len(bigrams) > 43:
+                if len(bigrams) > MAX_BIGRAM_LEN:
                         print("[Error]: Domain name to long, cant fit lexical model")
                         exit(1)  
 
@@ -121,7 +145,7 @@ class clasifier:
         # Prediction with support vector machines model
         def get_svm(self, hostname: str) -> float:
                 self.load_data(hostname)
-                svm_model = pickle.load(open(self.models + '/svm_final.svm', 'rb'))
+                svm_model = pickle.load(open(self.models + '/' + self.svm_model_path, 'rb'))
 
                 np_input = np.array([self.data], dtype=np.float32)
                 prediction = svm_model.predict(np_input)
@@ -131,7 +155,7 @@ class clasifier:
         # Prediction with data-based model
         def get_data(self, hostname: str) -> float:
                 self.load_data(hostname)
-                data_model = torch.load(self.models + '/v1.3_0.12err.pt')
+                data_model = torch.load(self.models + '/' + self.data_model_path)
 
                 torch_input = torch.tensor(self.data)
                 prediction = data_model(torch_input)
