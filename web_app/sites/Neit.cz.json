@@ -1,0 +1,8 @@
+{
+    "domain_name": "Neit.cz",
+    "lexical": 0.936,
+    "data-based": 0.927,
+    "svm": 1.0,
+    "combined": 0.952,
+    "accuracy": 0.964
+}

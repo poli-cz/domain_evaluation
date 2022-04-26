@@ -1,0 +1,8 @@
+{
+    "domain_name": "ahoj.com",
+    "lexical": 0.919,
+    "data-based": 0.572,
+    "svm": 1.0,
+    "combined": 0.748,
+    "accuracy": 0.928
+}

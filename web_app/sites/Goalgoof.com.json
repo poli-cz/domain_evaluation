@@ -1,0 +1,8 @@
+{
+    "domain_name": "Goalgoof.com",
+    "lexical": 0.105,
+    "data-based": 0.022,
+    "svm": 0.0,
+    "combined": 0.042,
+    "accuracy": 0.875
+}

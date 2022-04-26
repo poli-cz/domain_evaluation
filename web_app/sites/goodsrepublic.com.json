@@ -1,0 +1,8 @@
+{
+    "domain_name": "goodsrepublic.com",
+    "lexical": 0.522,
+    "data-based": 0.97,
+    "svm": 1.0,
+    "combined": 0.959,
+    "accuracy": 0.964
+}

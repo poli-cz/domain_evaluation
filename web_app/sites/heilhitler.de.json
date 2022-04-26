@@ -1,0 +1,8 @@
+{
+    "domain_name": "heilhitler.de",
+    "lexical": 0.934,
+    "data-based": 0.652,
+    "svm": 1.0,
+    "combined": 0.842,
+    "accuracy": 0.804
+}

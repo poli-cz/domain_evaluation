@@ -1,0 +1,8 @@
+{
+    "domain_name": "www.w3schools.com",
+    "lexical": 0.001,
+    "data-based": 0.025,
+    "svm": 0.0,
+    "combined": 0.021,
+    "accuracy": 0.91
+}

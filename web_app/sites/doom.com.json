@@ -1,0 +1,8 @@
+{
+    "domain_name": "doom.com",
+    "lexical": 0.975,
+    "data-based": 0.954,
+    "svm": 1.0,
+    "combined": 0.97,
+    "accuracy": 0.964
+}

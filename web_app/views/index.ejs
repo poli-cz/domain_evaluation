@@ -1,0 +1,331 @@
+<div class="page_holder">
+    <div class="header">
+        <h1> <div class="url">url</div>  <div class="check">check</div> </h1>
+    </div>
+    <div class="wrapper">
+        <div class="top-bar" id="top-bar">
+            <div class="search_bar">
+        
+                <h2>Check domain name</h2>
+                
+                <div class="search_bar">
+                    <input type="text" name="domain_name" id="domain_name">
+                    <button onclick="resolve()">Do it!</button>
+                    <p id="mobile">Data collection and AI processing usualy take 15s</p>
+                </div>
+                <div id="myProgress">
+                    <div id="myBar"></div>
+                </div>
+            </div>
+            <div class="top-about">
+                <div id="mobile_about">
+                    <h2>What is it?</h2>
+                    <p><a href="https://urlcheck.eu">urlcheck.eu</a>  is free tool for analyzing the maliciousness of domain names. The core of the classification system is developed as a bachelor's thesis at <a href="https://fit.vut.cz">BUT FIT</a>. 
+                        The implementation will be published soon on <a href="https://github.com">github</a>. <br> It predicts domain maliciousness on a scale of 0-100% and can also determine the accuracy of its prediction.</p>
+                </div>
+                <div class="overall">
+
+                    <div class="o_row">
+                        <h2 id="result" style="display: none;">Rating: <span id='combined'></span>% <span style="font-style: italic; font-size: smaller; font-weight: 400;">(with <span id='accuracy'></span>% accuracy)</span></h2>
+                        <h1 id="verbal_rating"></h1>
+                        <div id="feedback" style="display: none;">
+                   
+                            <button id="good" onclick="feedback(1)">Right!</button>
+                            <button id="bad" onclick="feedback(0)">Hmm, no</button>
+                        </div>
+
+                        <div id="thank">Thank you for your feedback!</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="about" id="response">
+
+              <div class="a_column">
+            <img src="/img/molecular.png" alt="neural network" >
+        <h2>Name analysis</h2>
+        <p class="subscript">neural network</p>
+
+        <div class="model_description">
+            Lexical model classifies domain name based only on its name. Therefore, it can be used well if the domain is unavailable or a large amount of data cant be retrieved.
+            </div>
+
+        <h2><span id="lex_percentage" class="percentage"></span></h2>
+        <canvas id="lex_canvas"></canvas>
+
+        </div>
+       <div class="a_column">
+           <img src="/img/molecular.png" alt="neural network" >
+           <h2>Data analysis</h2>
+           
+           <p class="subscript">neural network</p>
+
+           <div class="model_description">
+            The main data-based model classifies domains based on DNS records, Whois records, SSL certificates and many more. 
+            This is the most accurate model we have. And it was trained on more than a million domains.
+           </div>
+           <h2><span id="data_percentage" class="percentage"></span></h2>
+           <canvas id="data_canvas"></canvas>
+      </div>
+
+
+        <div class="a_column">
+            <img src="/img/classification.png" alt="neural network" >
+            <h2>Data clustering</h2>
+            <p class="subscript">support vector machines</p>
+ 
+            <div class="model_description">
+             Support vector machines or shortly SVM is great for binary classification. Here it is used as a check that other models work well. 
+             Its output mainly affects the accuracy of the prediction
+            </div>
+            <h2><span id="svm_percentage" class="percentage"></span></h2>  
+            <canvas id="svm_canvas"></canvas>
+        </div>
+    </div>
+
+    <div class="about_project" id="about_project">
+        <h1>About project</h1>
+        <div class="about_holder">
+
+            <div class="p_column">
+                <h1>Why?</h1>
+                <p>The main purpose of this page is to test the implementation of the developed classifier. 
+                    If you find a bug or have a tip to improve, feel free to contact me. 
+                    You can find the contact at the bottom of the page</p>
+
+            </div>
+            <div class="p_column">
+                <h1>How it works?</h1>
+
+                <p>The system first tries to find out as much data as possible for the domain. Based on how many can be collected weight is added to the main or lexical model.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="powered">
+        <h1>Powered by</h1>
+
+        <div class="about_holder">
+            <div class="p_column">
+                <img src="/img/torch.png" alt="">
+            </div>
+            <div class="p_column">
+                <img src="/img/tensor.png" alt="" >
+            </div>
+            
+        </div> 
+
+        <div class="about_holder">
+            <div class="p_column">
+                <img src="/img/sklearn.png" style="max-width: 300px;" alt="">
+            </div>
+            <div class="p_column">
+                <img src="/img/fit.png" alt="" >
+            </div>
+            
+        </div> 
+
+    
+
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+<script>
+
+              //  build_chart("lex_canvas", 50, "#404040", "#404040", false)
+              //  build_chart("data_canvas", 50, "#404040", "#404040", false)
+              //  build_chart("svm_canvas", 50, "#404040", "#404040", false)
+
+
+    function feedback(it_is_true){
+        var http = new XMLHttpRequest();
+        var url = '/feedback';
+        var params = `feedback=${it_is_true}`;
+        http.open('POST', url, true);
+
+        //Send the proper header information along with the request
+        http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+        document.getElementById('thank').style.display = "block"
+        document.getElementById('feedback').style.display = "none"
+
+    }
+
+
+    function resolve(){
+
+        let domain_name = document.getElementById('domain_name').value
+
+        // delete http or https 
+        const proto = /^https?:\/\/(www.)?/i;
+        domain_name = domain_name.replace(proto, '');
+
+        const path = /\/.*$/i;
+        domain_name = domain_name.replace(path, '')
+
+        const www = /^www./i;
+        domain_name = domain_name.replace(www, '')
+
+        console.log(domain_name)
+        
+
+        if(!domainValidate(domain_name)){
+            alert(`${domain_name} is not vadid domain name`)
+            return 1
+        }
+
+        document.getElementById('thank').style.display = "none"
+        var http = new XMLHttpRequest();
+        var url = '/all';
+        var params = `domain_name=${domain_name}&force=on&UA=${navigator.userAgent}`;
+        http.open('POST', url, true);
+
+        //Send the proper header information along with the request
+        http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+
+        http.onreadystatechange = function() {//Call a function when the state changes.
+            if(http.readyState == 4 && http.status == 200) {
+
+                document.getElementById("result").style.display = "block"
+                document.getElementById("about_project").style.marginTop = "2em"
+                document.getElementById("response").style.marginTop = "-2em"
+
+                const data = JSON.parse(http.responseText);
+                document.getElementById("svm_percentage").innerHTML =  parseFloat(data['Data']['svm'] *100).toFixed(1) + "%"
+                document.getElementById("data_percentage").innerHTML =  parseFloat(data['Data']['data-based']*100).toFixed(1) + "%"
+                document.getElementById("lex_percentage").innerHTML =  parseFloat(data['Data']['lexical']*100).toFixed(1) + "%"
+
+                document.getElementById("combined").innerHTML =  parseFloat(data['Data']['combined']*100).toFixed(1) 
+                document.getElementById("accuracy").innerHTML =  parseFloat(data['Data']['accuracy']*100).toFixed(1)
+
+                document.getElementById("feedback").style.display = "block"
+                let score = parseFloat(data['Data']['combined']*100).toFixed(1)
+                let rating = document.getElementById('verbal_rating')
+                if(score > 80){
+                    rating.innerHTML = "Great, go ahead!"
+                    rating.style.color = "#009879"
+                }else if(score > 60){
+                    rating.innerHTML = "Good, acceptable"
+                    rating.style.color = "#009879"
+                }else if(score > 40){
+                    rating.innerHTML = "This is not good"
+                    rating.style.color = "#c4421a"
+                }else if(score > 30){
+                    rating.innerHTML = "Go away"
+                    rating.style.color = "#c4421a"
+                }else{
+                    rating.innerHTML = "This site is just bad"
+                    rating.style.color = "#c4421a"
+                }
+
+
+                build_chart("lex_canvas", parseFloat(data['Data']['lexical']*100).toFixed(1))
+                build_chart("data_canvas", parseFloat(data['Data']['data-based']*100).toFixed(1))
+                build_chart("svm_canvas", parseFloat(data['Data']['svm']*100).toFixed(1))
+
+                console.log(deviceType())
+                if(deviceType() == "mobile"){
+
+                    document.getElementById('mobile_about').style.display = "none"
+                }
+            }
+        }
+        http.send(params);
+
+        i = 1;
+        var elem = document.getElementById("myBar");
+        var width = 0;
+        var id = setInterval(frame, 80);
+
+            function frame() {
+                if (width >= 100) {
+                    clearInterval(id);
+                    i = 0;
+                } else {
+                    width++;
+                    elem.style.width = width + "%";
+                    // elem.innerHTML = width + "%";
+                }
+            }
+        }
+
+
+    function build_chart(canvas, percentage, bad_color="#c4421a", good_color="#009879", display_legend=true){
+        Chart.defaults.global.defaultFontFamily = "Arial";
+        Chart.defaults.global.defaultFontSize = 18;
+
+
+        let sucess_chart = null
+        let sucess_rate = document.getElementById(`${canvas}`);
+
+        let sucess_data = {
+            labels: ['good', 'bad'],
+                datasets: [{ 
+                    backgroundColor: [good_color,bad_color],
+                    hoverBackgroundColor: ['#12908e','#f98f45'],
+                    data: [percentage, 100-percentage]}] };
+
+        //try{sucess_chart.destroy();}catch(error){}
+
+        sucess_chart = new Chart(sucess_rate, {
+        type: 'doughnut',
+        data: sucess_data,
+        responsive: false,
+        options: {
+         legend: {
+            display: display_legend
+         },
+         tooltips: {
+            enabled: false
+         }
+    }
+        
+         });
+
+    }
+
+
+    function domainValidate(domain) {
+        
+
+        if (/^[www.]*[a-zA-Z0-9][a-zA-Z0-9-]{0,61}[a-zA-Z0-9](?:\.[a-zA-Z]{2,})+$/.test(domain)) {
+            return true
+        }else{
+            return false;
+        }
+    }
+
+
+    const deviceType = () => {
+        const ua = navigator.userAgent;
+        if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) {
+            return "tablet";
+        }
+        else if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(ua)) {
+            return "mobile";
+        }
+        return "desktop";
+    };
+
+
+
+
+    document.querySelector("input[type='text']").addEventListener("keyup", function(event) {
+    if (event.keyCode === 13) {
+        event.preventDefault();
+        resolve();
+    }
+    });
+
+</script>
+
+
+
+
+
+
+

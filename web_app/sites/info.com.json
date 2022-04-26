@@ -1,0 +1,8 @@
+{
+    "domain_name": "info.com",
+    "lexical": 0.77,
+    "data-based": 0.931,
+    "svm": 1.0,
+    "combined": 0.947,
+    "accuracy": 0.964
+}

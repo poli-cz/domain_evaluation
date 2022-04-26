@@ -1,0 +1,8 @@
+{
+    "domain_name": "downloadmoreram.com",
+    "lexical": 0.001,
+    "data-based": 0.962,
+    "svm": 1.0,
+    "combined": 0.951,
+    "accuracy": 0.982
+}

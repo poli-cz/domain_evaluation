@@ -1,0 +1,8 @@
+{
+    "domain_name": "fit.vuut.cz",
+    "lexical": 0.008,
+    "data-based": 0.014,
+    "svm": 0.0,
+    "combined": 0.012,
+    "accuracy": 0.875
+}

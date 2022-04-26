@@ -23,8 +23,6 @@ import Database
 
 
 
-
-
 '''		
 Class: Net
 pytorch definition of neural network structure
@@ -92,7 +90,14 @@ def train(dataset):
 
 
 
-
+'''		
+Parameters
+----------
+model: Neural network model to be validated
+testset: Data for model validation
+graph: bool value, if should be printed ROC curve
+		  
+'''   
 def validate_model(model, testset, graph=False):
 
     metric = metrics.F1Score(num_classes=1, threshold=0.5)
@@ -126,19 +131,21 @@ def validate_model(model, testset, graph=False):
 
 
     print("F1 score for model is:", result)
-    #input()
 
-    from sklearn import metrics as sk_metrics
 
-    fpr, tpr, _ = sk_metrics.roc_curve(y_true_converted,  y_pred_converted)
+    # Build ROC curve chart
+    if graph is not False:
+        from sklearn import metrics as sk_metrics
 
-    plt.rcParams['font.size'] = 10
-    #create ROC curve
-    plt.plot(fpr,tpr, label = "ROC křivka výsledného systému")
-    plt.ylabel('True Positive Rate')
-    plt.xlabel('False Positive Rate')
-    plt.title('ROC křivka výsledného systému')
-    plt.show()
+        fpr, tpr, _ = sk_metrics.roc_curve(y_true_converted,  y_pred_converted)
+
+        plt.rcParams['font.size'] = 10
+        #create ROC curve
+        plt.plot(fpr,tpr, label = "ROC křivka výsledného systému")
+        plt.ylabel('True Positive Rate')
+        plt.xlabel('False Positive Rate')
+        plt.title('ROC křivka výsledného systému')
+        plt.show()
 
 
 
@@ -149,7 +156,7 @@ if __name__ == "__main__":
 
     ### Learning constants ###
     learning_rate = 0.000001
-    test_learn_ratio = 0.1
+    test_learn_ratio = 0.2
     epoch_count = 25
 
 
@@ -201,21 +208,23 @@ if __name__ == "__main__":
 
     
 
-    data_model = torch.load('../../models/v1.3_0.12err.pt')
-
-    validate_model(data_model, testset)
+    # Load saved model for validation
+    # data_model = torch.load('../../models/v1.3_0.12err.pt')
 
 
     # traing network
-    #for i in range(epoch_count):
-        #train(dataset)
-        #print("Batch number:", i)
-
+    for i in range(epoch_count):
+        train(dataset)
+        print("Batch number:", i)
 
 
     # evaluate model
+    validate_model(net, testset)
 
-    #torch.save(net, "./model_bigram.pt")
+
+
+    # safe model
+    torch.save(net, "./model_bigram.pt")
 
 
 

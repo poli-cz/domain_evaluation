@@ -1,0 +1,8 @@
+{
+    "domain_name": "go.fame.utb.cz",
+    "lexical": 0.002,
+    "data-based": 0.052,
+    "svm": 0.0,
+    "combined": 0.043,
+    "accuracy": 0.91
+}

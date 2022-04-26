@@ -1,0 +1,8 @@
+{
+    "domain_name": "www.seznam.cz",
+    "lexical": 0.002,
+    "data-based": 0.117,
+    "svm": 0.0,
+    "combined": 0.096,
+    "accuracy": 0.91
+}

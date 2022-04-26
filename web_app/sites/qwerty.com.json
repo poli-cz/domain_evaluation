@@ -1,0 +1,8 @@
+{
+    "domain_name": "qwerty.com",
+    "lexical": 0.135,
+    "data-based": 0.908,
+    "svm": 1.0,
+    "combined": 0.902,
+    "accuracy": 0.964
+}

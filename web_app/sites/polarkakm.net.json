@@ -1,0 +1,8 @@
+{
+    "domain_name": "polarkakm.net",
+    "lexical": 0.926,
+    "data-based": 0.636,
+    "svm": 1.0,
+    "combined": 0.771,
+    "accuracy": 0.964
+}

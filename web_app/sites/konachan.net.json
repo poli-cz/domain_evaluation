@@ -1,0 +1,8 @@
+{
+    "domain_name": "konachan.net",
+    "lexical": 0.926,
+    "data-based": 0.843,
+    "svm": 1.0,
+    "combined": 0.901,
+    "accuracy": 0.946
+}

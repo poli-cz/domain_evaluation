@@ -1,0 +1,8 @@
+{
+    "domain_name": "wis.fit.vutbr.cz",
+    "lexical": 0.0,
+    "data-based": 0.284,
+    "svm": 0.0,
+    "combined": 0.254,
+    "accuracy": 0.946
+}

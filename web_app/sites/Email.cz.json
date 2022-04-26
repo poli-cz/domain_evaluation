@@ -1,0 +1,8 @@
+{
+    "domain_name": "Email.cz",
+    "lexical": 0.937,
+    "data-based": 0.927,
+    "svm": 1.0,
+    "combined": 0.951,
+    "accuracy": 0.982
+}

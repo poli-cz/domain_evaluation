@@ -1,0 +1,8 @@
+{
+    "domain_name": "lhota-zlin.cz",
+    "lexical": 0.618,
+    "data-based": 0.927,
+    "svm": 1.0,
+    "combined": 0.944,
+    "accuracy": 0.982
+}

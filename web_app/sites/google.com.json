@@ -1,0 +1,8 @@
+{
+    "domain_name": "google.com",
+    "lexical": 0.938,
+    "data-based": 0.757,
+    "svm": 1.0,
+    "combined": 0.842,
+    "accuracy": 0.982
+}

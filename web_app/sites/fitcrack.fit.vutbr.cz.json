@@ -1,0 +1,8 @@
+{
+    "domain_name": "fitcrack.fit.vutbr.cz",
+    "lexical": 0.505,
+    "data-based": 0.855,
+    "svm": 1.0,
+    "combined": 0.828,
+    "accuracy": 0.76
+}

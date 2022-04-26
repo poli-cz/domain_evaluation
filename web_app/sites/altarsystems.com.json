@@ -1,0 +1,8 @@
+{
+    "domain_name": "altarsystems.com",
+    "lexical": 0.007,
+    "data-based": 0.637,
+    "svm": 1.0,
+    "combined": 0.713,
+    "accuracy": 0.946
+}

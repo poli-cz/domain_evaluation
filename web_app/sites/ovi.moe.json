@@ -1,0 +1,8 @@
+{
+    "domain_name": "ovi.moe",
+    "lexical": 0.972,
+    "data-based": 0.774,
+    "svm": 1.0,
+    "combined": 0.859,
+    "accuracy": 0.964
+}

@@ -1,0 +1,8 @@
+{
+    "domain_name": "Utb.cz",
+    "lexical": 0.53,
+    "data-based": 0.963,
+    "svm": 1.0,
+    "combined": 0.955,
+    "accuracy": 0.964
+}

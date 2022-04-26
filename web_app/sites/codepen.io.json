@@ -1,0 +1,8 @@
+{
+    "domain_name": "codepen.io",
+    "lexical": 0.96,
+    "data-based": 0.993,
+    "svm": 1.0,
+    "combined": 0.995,
+    "accuracy": 0.982
+}

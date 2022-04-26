@@ -1,0 +1,8 @@
+{
+    "domain_name": "danbooru.donmai.us",
+    "lexical": 0.7,
+    "data-based": 0.768,
+    "svm": 1.0,
+    "combined": 0.829,
+    "accuracy": 0.946
+}

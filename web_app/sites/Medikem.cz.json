@@ -1,0 +1,8 @@
+{
+    "domain_name": "Medikem.cz",
+    "lexical": 0.802,
+    "data-based": 0.843,
+    "svm": 1.0,
+    "combined": 0.892,
+    "accuracy": 0.946
+}

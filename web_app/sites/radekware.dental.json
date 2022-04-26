@@ -1,0 +1,8 @@
+{
+    "domain_name": "radekware.dental",
+    "lexical": 0.722,
+    "data-based": 0.007,
+    "svm": 0.0,
+    "combined": 0.186,
+    "accuracy": 0.875
+}

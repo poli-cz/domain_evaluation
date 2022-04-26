@@ -1,0 +1,8 @@
+{
+    "domain_name": "github.coma",
+    "lexical": 0.908,
+    "data-based": 0.006,
+    "svm": 0.0,
+    "combined": 0.232,
+    "accuracy": 0.875
+}

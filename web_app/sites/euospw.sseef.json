@@ -1,0 +1,8 @@
+{
+    "domain_name": "euospw.sseef",
+    "lexical": 0.172,
+    "data-based": 0.006,
+    "svm": 0.0,
+    "combined": 0.047,
+    "accuracy": 0.875
+}

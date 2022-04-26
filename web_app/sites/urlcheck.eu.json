@@ -1,0 +1,8 @@
+{
+    "domain_name": "urlcheck.eu",
+    "lexical": 0.881,
+    "data-based": 0.54,
+    "svm": 1.0,
+    "combined": 0.726,
+    "accuracy": 0.928
+}

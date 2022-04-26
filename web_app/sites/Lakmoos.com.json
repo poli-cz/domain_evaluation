@@ -1,0 +1,8 @@
+{
+    "domain_name": "Lakmoos.com",
+    "lexical": 0.853,
+    "data-based": 0.62,
+    "svm": 1.0,
+    "combined": 0.769,
+    "accuracy": 0.928
+}

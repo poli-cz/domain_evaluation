@@ -1,0 +1,8 @@
+{
+    "domain_name": "netflix.com",
+    "lexical": 0.047,
+    "data-based": 0.964,
+    "svm": 1.0,
+    "combined": 0.954,
+    "accuracy": 0.982
+}

@@ -1,0 +1,8 @@
+{
+    "domain_name": "hi.com",
+    "lexical": 0.966,
+    "data-based": 0.962,
+    "svm": 1.0,
+    "combined": 0.975,
+    "accuracy": 0.982
+}

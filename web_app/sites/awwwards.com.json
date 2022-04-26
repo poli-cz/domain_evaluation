@@ -1,0 +1,8 @@
+{
+    "domain_name": "awwwards.com",
+    "lexical": 0.033,
+    "data-based": 0.957,
+    "svm": 1.0,
+    "combined": 0.949,
+    "accuracy": 0.982
+}

@@ -1,0 +1,8 @@
+{
+    "domain_name": "medikem.cz.cz.cz",
+    "lexical": 0.0,
+    "data-based": 0.028,
+    "svm": 0.0,
+    "combined": 0.021,
+    "accuracy": 0.875
+}

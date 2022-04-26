@@ -1,0 +1,8 @@
+{
+    "domain_name": "evil.com",
+    "lexical": 0.964,
+    "data-based": 0.886,
+    "svm": 1.0,
+    "combined": 0.928,
+    "accuracy": 0.964
+}

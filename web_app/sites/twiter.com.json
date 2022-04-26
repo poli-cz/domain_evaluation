@@ -1,0 +1,8 @@
+{
+    "domain_name": "twiter.com",
+    "lexical": 0.679,
+    "data-based": 0.939,
+    "svm": 1.0,
+    "combined": 0.941,
+    "accuracy": 0.946
+}

@@ -1,0 +1,8 @@
+{
+    "domain_name": "facebook.com",
+    "lexical": 0.01,
+    "data-based": 0.856,
+    "svm": 1.0,
+    "combined": 0.884,
+    "accuracy": 0.982
+}

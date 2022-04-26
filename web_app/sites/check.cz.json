@@ -1,0 +1,8 @@
+{
+    "domain_name": "check.cz",
+    "lexical": 0.958,
+    "data-based": 0.43,
+    "svm": 1.0,
+    "combined": 0.586,
+    "accuracy": 0.696
+}

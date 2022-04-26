@@ -1,0 +1,8 @@
+{
+    "domain_name": "ass.com",
+    "lexical": 0.838,
+    "data-based": 0.874,
+    "svm": 1.0,
+    "combined": 0.914,
+    "accuracy": 0.964
+}

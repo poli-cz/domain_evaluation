@@ -1,0 +1,8 @@
+{
+    "domain_name": "trafficland.xyz",
+    "lexical": 0.067,
+    "data-based": 0.482,
+    "svm": 1.0,
+    "combined": 0.538,
+    "accuracy": 0.696
+}

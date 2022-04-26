@@ -1,0 +1,8 @@
+{
+    "domain_name": "esi.microsoft.com",
+    "lexical": 0.004,
+    "data-based": 0.295,
+    "svm": 0.0,
+    "combined": 0.243,
+    "accuracy": 0.91
+}

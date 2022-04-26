@@ -1,0 +1,8 @@
+{
+    "domain_name": "www.greycortex.com",
+    "lexical": 0.0,
+    "data-based": 0.848,
+    "svm": 1.0,
+    "combined": 0.898,
+    "accuracy": 1.0
+}

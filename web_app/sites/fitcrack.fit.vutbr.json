@@ -1,0 +1,8 @@
+{
+    "domain_name": "fitcrack.fit.vutbr",
+    "lexical": 0.136,
+    "data-based": 0.807,
+    "svm": 0.0,
+    "combined": 0.84,
+    "accuracy": 0.675
+}

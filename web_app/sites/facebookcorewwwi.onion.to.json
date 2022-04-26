@@ -1,0 +1,8 @@
+{
+    "domain_name": "facebookcorewwwi.onion.to",
+    "lexical": 0.003,
+    "data-based": 0.759,
+    "svm": 1.0,
+    "combined": 0.804,
+    "accuracy": 0.964
+}

@@ -1,0 +1,8 @@
+{
+    "domain_name": "jsmevkafec.cz",
+    "lexical": 0.005,
+    "data-based": 0.011,
+    "svm": 0.0,
+    "combined": 0.01,
+    "accuracy": 0.875
+}

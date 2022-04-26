@@ -1,0 +1,8 @@
+{
+    "domain_name": "asdf.com",
+    "lexical": 0.891,
+    "data-based": 0.872,
+    "svm": 1.0,
+    "combined": 0.916,
+    "accuracy": 0.946
+}

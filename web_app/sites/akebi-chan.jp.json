@@ -1,0 +1,8 @@
+{
+    "domain_name": "akebi-chan.jp",
+    "lexical": 0.053,
+    "data-based": 0.639,
+    "svm": 1.0,
+    "combined": 0.703,
+    "accuracy": 0.928
+}

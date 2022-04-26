@@ -1,0 +1,8 @@
+{
+    "domain_name": "localhost.cz",
+    "lexical": 0.34,
+    "data-based": 1.0,
+    "svm": 1.0,
+    "combined": 0.893,
+    "accuracy": 0.879
+}

@@ -1,0 +1,8 @@
+{
+    "domain_name": "goat.com",
+    "lexical": 0.363,
+    "data-based": 0.974,
+    "svm": 1.0,
+    "combined": 0.968,
+    "accuracy": 0.982
+}

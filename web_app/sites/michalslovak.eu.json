@@ -1,0 +1,8 @@
+{
+    "domain_name": "michalslovak.eu",
+    "lexical": 0.008,
+    "data-based": 0.586,
+    "svm": 1.0,
+    "combined": 0.683,
+    "accuracy": 0.946
+}

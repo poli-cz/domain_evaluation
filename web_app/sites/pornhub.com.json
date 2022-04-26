@@ -1,0 +1,8 @@
+{
+    "domain_name": "pornhub.com",
+    "lexical": 0.88,
+    "data-based": 0.973,
+    "svm": 1.0,
+    "combined": 0.978,
+    "accuracy": 0.964
+}

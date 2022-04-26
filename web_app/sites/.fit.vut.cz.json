@@ -1,0 +1,8 @@
+{
+    "domain_name": ".fit.vut.cz",
+    "lexical": 0.065,
+    "data-based": 0.028,
+    "svm": 0.0,
+    "combined": 0.037,
+    "accuracy": 0.875
+}

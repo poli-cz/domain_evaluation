@@ -1,0 +1,8 @@
+{
+    "domain_name": "radek.cz",
+    "lexical": 0.722,
+    "data-based": 0.43,
+    "svm": 1.0,
+    "combined": 0.571,
+    "accuracy": 0.678
+}

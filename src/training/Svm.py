@@ -1,3 +1,10 @@
+""" File: Svm.py
+    Author: Jan Polisensky
+    ----
+    Modules for SVM classifier training
+"""
+
+
 import json
 from sklearn import svm
 from sklearn.utils import shuffle
@@ -13,85 +20,116 @@ import array
 
 
 
-#clf = svm.SVC(kernel='rbf', verbose=True) # Linear Kernel
-
-d = Database.Database('domains')
-bad_data = list()
-good_data = list()
 
 
-good_collection = d.return_collection("bad_dataset")
-bad_collection = d.return_collection("good_dataset")
+'''		
+Parameters
+----------
+model: SVM model to be trained
+x_dataset: Values for training
+y_dataset: Labels for training 
+		  
+''' 
+def train(model, x_dataset, y_dataset):
 
+    # Train SVM module
+    model.fit(x_dataset, y_dataset)
 
-for name in good_collection.find():
-    good_data.append(name)
+    print("predicting smv...")
+    y_pred = clf.predict(x_dataset)
 
-
-for name in bad_collection.find():
-    bad_data.append(name)
-
-
-#print(len(bad_data))
-#print(len(good_data))
-
-
-
- 
-
-label = None
-
-# shuffle datasets
-dats = shuffle(good_data + bad_data)
-
-x_testset = list()
-y_testset = list()
-
-x_dataset = list()
-y_dataset = list()
-counter =0
+    # testing model
+    print("Accuracy:",metrics.accuracy_score(y_dataset, y_pred))
 
 
 
-# Split data to train data and test data
-for piece in dats:
-    if counter < 5000:
-        x_testset.append(piece['data'])
-        y_testset.append(piece['label'])
-    else:
-        x_dataset.append(piece['data'])
-        y_dataset.append(piece['label'])
-
-    counter+=1
 
 
 
-print("loading svm....")
-
-clf = pickle.load(open('../models/svm_model.smv', 'rb'))
-
-#clf.fit(x_dataset, y_dataset)
-#print("predicting smv...")
-#y_pred = clf.predict(x_dataset)
-#print("Accuracy:",metrics.accuracy_score(y_dataset, y_pred))
-
-#filename = ''
-#pickle.dump(clf, open(filename, 'wb'))
-
-count=0
-good=0
-
-for line in dats:
-    in_data = np.array([line['data']], dtype=np.float32)
-    prediction = clf.predict(in_data)
-    #print(prediction[0], line['label'])
-    if prediction[0] == line['label']:
-        good+=1
-    
-    count+=1
 
 
-    print(good/count)
+'''		
+Parameters
+----------
+dataset : list
+		  
+''' 
+def validate_model(model, testset, graph=False):
+    pass
+
+
+
+
+
+
+
+
+
+
+if __name__ == '__main__':
+
+    svm_kernel = 'rbf'
+    test_learn_ratio = 0.2
+
+
+    clf = svm.SVC(kernel=svm_kernel, verbose=True) # Linear Kernel
+
+    d = Database.Database('domains')
+    bad_data = list()
+    good_data = list()
+
+
+    good_collection = d.return_collection("bad_dataset")
+    bad_collection = d.return_collection("good_dataset")
+
+
+    for name in good_collection.find():
+        good_data.append(name)
+
+
+    for name in bad_collection.find():
+        bad_data.append(name)
+
+
+
+
+    label = None
+
+    # shuffle datasets
+    shufled_data = shuffle(good_data + bad_data)
+
+    x_testset = list()
+    y_testset = list()
+
+    x_dataset = list()
+    y_dataset = list()
+    counter =0
+
+    dataset_len = len(shufled_data)
+
+
+
+    # Split data to train data and test data
+    for data_row in shufled_data:
+        if counter < dataset_len*test_learn_ratio:
+            x_testset.append(data_row['data'])
+            y_testset.append(data_row['label'])
+        else:
+            x_dataset.append(data_row['data'])
+            y_dataset.append(data_row['label'])
+
+        counter+=1
+
+    # Train model 
+    train(clf, x_dataset, y_dataset)
+
+    # Validate model
+    validate_model(clf, x_testset, y_testset, True)
+
+
+
+
+
 
 
 

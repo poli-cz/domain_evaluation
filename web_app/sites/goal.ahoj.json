@@ -1,0 +1,8 @@
+{
+    "domain_name": "goal.ahoj",
+    "lexical": 0.88,
+    "data-based": 0.006,
+    "svm": 0.0,
+    "combined": 0.225,
+    "accuracy": 0.875
+}

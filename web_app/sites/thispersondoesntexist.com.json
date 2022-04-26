@@ -1,0 +1,8 @@
+{
+    "domain_name": "thispersondoesntexist.com",
+    "lexical": 0.002,
+    "data-based": 0.989,
+    "svm": 0.0,
+    "combined": 0.747,
+    "accuracy": 0.678
+}

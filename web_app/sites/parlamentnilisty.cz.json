@@ -1,0 +1,8 @@
+{
+    "domain_name": "parlamentnilisty.cz",
+    "lexical": 0.954,
+    "data-based": 0.968,
+    "svm": 1.0,
+    "combined": 0.978,
+    "accuracy": 0.964
+}

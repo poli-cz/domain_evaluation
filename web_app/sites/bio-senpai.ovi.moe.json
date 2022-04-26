@@ -1,0 +1,8 @@
+{
+    "domain_name": "bio-senpai.ovi.moe",
+    "lexical": 0.326,
+    "data-based": 0.887,
+    "svm": 1.0,
+    "combined": 0.707,
+    "accuracy": 0.928
+}

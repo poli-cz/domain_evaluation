@@ -1,0 +1,8 @@
+{
+    "domain_name": "www.is.muni.cz",
+    "lexical": 0.007,
+    "data-based": 0.133,
+    "svm": 0.0,
+    "combined": 0.106,
+    "accuracy": 0.893
+}

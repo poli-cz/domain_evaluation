@@ -1,0 +1,8 @@
+{
+    "domain_name": "hpool.in",
+    "lexical": 0.88,
+    "data-based": 0.877,
+    "svm": 1.0,
+    "combined": 0.918,
+    "accuracy": 0.946
+}

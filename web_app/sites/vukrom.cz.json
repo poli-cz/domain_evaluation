@@ -1,0 +1,8 @@
+{
+    "domain_name": "vukrom.cz",
+    "lexical": 0.835,
+    "data-based": 0.654,
+    "svm": 1.0,
+    "combined": 0.778,
+    "accuracy": 0.964
+}

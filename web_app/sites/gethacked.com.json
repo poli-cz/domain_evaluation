@@ -1,0 +1,8 @@
+{
+    "domain_name": "gethacked.com",
+    "lexical": 0.208,
+    "data-based": 0.869,
+    "svm": 0.0,
+    "combined": 0.628,
+    "accuracy": 0.643
+}

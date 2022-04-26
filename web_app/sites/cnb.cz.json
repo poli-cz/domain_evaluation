@@ -1,0 +1,8 @@
+{
+    "domain_name": "cnb.cz",
+    "lexical": 0.997,
+    "data-based": 0.968,
+    "svm": 1.0,
+    "combined": 0.98,
+    "accuracy": 0.964
+}

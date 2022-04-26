@@ -1,0 +1,8 @@
+{
+    "domain_name": "stackoverflow.com",
+    "lexical": 0.02,
+    "data-based": 0.874,
+    "svm": 1.0,
+    "combined": 0.875,
+    "accuracy": 0.964
+}

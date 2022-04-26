@@ -15,9 +15,12 @@ System for evaluation risk of internet domains
 - **./src** Main implementation
 - **./mongo** Database backups and test data
 - **./src/training**  Scripts for training models
+- **./web_app/** Source codes for web implementation 
 
 
 ### Instalation
 - pip3 install -r requirements.txt
 
+
+### Web implementation
 

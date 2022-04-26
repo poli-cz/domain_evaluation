@@ -1,0 +1,8 @@
+{
+    "domain_name": "google.sk",
+    "lexical": 0.949,
+    "data-based": 0.921,
+    "svm": 1.0,
+    "combined": 0.948,
+    "accuracy": 0.982
+}

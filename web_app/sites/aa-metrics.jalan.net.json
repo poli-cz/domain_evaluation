@@ -1,0 +1,8 @@
+{
+    "domain_name": "aa-metrics.jalan.net",
+    "lexical": 0.001,
+    "data-based": 0.101,
+    "svm": 0.0,
+    "combined": 0.083,
+    "accuracy": 0.91
+}

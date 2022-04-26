@@ -1,0 +1,8 @@
+{
+    "domain_name": "simple.org",
+    "lexical": 0.906,
+    "data-based": 0.989,
+    "svm": 1.0,
+    "combined": 0.99,
+    "accuracy": 0.982
+}

@@ -1,0 +1,8 @@
+{
+    "domain_name": "kafec.cz",
+    "lexical": 0.984,
+    "data-based": 0.927,
+    "svm": 1.0,
+    "combined": 0.954,
+    "accuracy": 0.964
+}

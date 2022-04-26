@@ -1,0 +1,8 @@
+{
+    "domain_name": "kakadu.cz",
+    "lexical": 0.97,
+    "data-based": 0.429,
+    "svm": 1.0,
+    "combined": 0.587,
+    "accuracy": 0.696
+}
