@@ -49,7 +49,7 @@ class Net(nn.Module):
 '''		
 Parameters
 ----------
-dataset : list
+dataset : shufled dataset from database
 		  
 '''          
 def train(dataset):
@@ -99,7 +99,7 @@ graph: bool value, if should be printed ROC curve
 		  
 '''   
 def validate_model(model, testset, graph=False):
-
+    # Compute F1 metric for system evaluation
     metric = metrics.F1Score(num_classes=1, threshold=0.5)
 
     y_true = list()
@@ -112,9 +112,6 @@ def validate_model(model, testset, graph=False):
         data = torch.FloatTensor(line["data"])
 
         prediction = float(model(data))
-
-        if counter % 5 == 0:
-            prediction = label
 
         y_true.append([label])
         y_pred.append([prediction])
@@ -141,10 +138,10 @@ def validate_model(model, testset, graph=False):
 
         plt.rcParams['font.size'] = 10
         #create ROC curve
-        plt.plot(fpr,tpr, label = "ROC křivka výsledného systému")
+        plt.plot(fpr,tpr, label = "ROC křivka datového modelu")
         plt.ylabel('True Positive Rate')
         plt.xlabel('False Positive Rate')
-        plt.title('ROC křivka výsledného systému')
+        plt.title('ROC křivka datového modelu')
         plt.show()
 
 
@@ -168,7 +165,7 @@ if __name__ == "__main__":
     optimizer.zero_grad()
 
 
-    # Prepare learning dataset
+    # Prepare learning dataset #
     d = Database.Database('domains')
     bad_data = list()
     good_data = list()
@@ -207,8 +204,7 @@ if __name__ == "__main__":
         counter+=1
 
     
-
-    # Load saved model for validation
+    # Load saved model for validation if needed
     # data_model = torch.load('../../models/v1.3_0.12err.pt')
 
 
@@ -220,7 +216,6 @@ if __name__ == "__main__":
 
     # evaluate model
     validate_model(net, testset)
-
 
 
     # safe model
