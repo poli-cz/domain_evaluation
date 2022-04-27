@@ -41,3 +41,10 @@ Frontend usage:
 - **./web_app/** Source codes for web implementation .
 - **./web_app/sites** Cached sites that have been resolved.
 
+### Database
+For models training or validation [MongoDB](https://www.mongodb.com/) is required. Database importing can be done by running following command:
+```console
+poli@poli:~$ sudo systemctl status mongod #Ensure that mongoDB is running
+poli@poli:~$ mongorestore -d domains mongo
+```
+
