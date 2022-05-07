@@ -94,7 +94,6 @@ class clasifier:
 
                 ### Paralel or sequestial data-load ###
                 if self.paralel == 'True':
-                        print("using paralel")
                         threading.Thread(target=domain.load_dns_data).start()
                         threading.Thread(target=domain.load_geo_info).start()
                         threading.Thread(target=domain.load_whois_data).start()
@@ -140,7 +139,7 @@ class clasifier:
                 in_data = np.array([bigrams], dtype=np.float32)
 
                 # Lexical models use inverse value
-                return float(self.lexical_model(in_data))
+                return float(1 - self.lexical_model(in_data))
 
         # Prediction with support vector machines model
         def get_svm(self, hostname: str) -> float:
@@ -150,7 +149,7 @@ class clasifier:
                 np_input = np.array([self.data], dtype=np.float32)
                 prediction = svm_model.predict(np_input)
 
-                return float(1 - prediction)
+                return float(prediction)
 
         # Prediction with data-based model
         def get_data(self, hostname: str) -> float:
@@ -160,7 +159,7 @@ class clasifier:
                 torch_input = torch.tensor(self.data)
                 prediction = data_model(torch_input)
 
-                return float(1 - prediction)
+                return float(prediction)
 
         # prediction with mixed model
         def get_mixed(self, hostname: str):
@@ -170,9 +169,9 @@ class clasifier:
 
 
                 # get predictions of all three models, value needs to be inverted for calculation
-                data = 1 - self.get_data(hostname)
-                svm = 1 - self.get_svm(hostname)
-                lexical = 1 - self.get_lexical(hostname)
+                data = self.get_data(hostname)
+                svm = self.get_svm(hostname)
+                lexical = self.get_lexical(hostname)
 
 
                 ## weight mode ##
@@ -208,8 +207,8 @@ class clasifier:
 
 
 
-                ### Inverting value to fit specifications, 1 -> bad domain, 0 -> good domain
-                prediction = 1 - prediction        
+                
+                    
                 
                 return prediction, self.accuracy
 
